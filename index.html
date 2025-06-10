@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回溯算法交互动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 95%;
+            max-width: 1200px;
+            min-height: 80vh;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+
+        .menu h1 {
+            font-size: 2.5em;
+            color: #4a5568;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-buttons {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2em;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .algorithm-container {
+            display: none;
+            height: 100%;
+        }
+
+        .algorithm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .algorithm-title {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            height: calc(100% - 80px);
+        }
+
+        .visualization-area {
+            flex: 2;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .control-panel {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chess-board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+            background: #8b4513;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .chess-cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .chess-cell.white {
+            background: #f0d9b5;
+        }
+
+        .chess-cell.black {
+            background: #b58863;
+        }
+
+        .chess-cell.queen {
+            background: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .chess-cell.attacked {
+            background: #ff6b6b !important;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        .chess-cell.trying {
+            background: #4ecdc4 !important;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px #4ecdc4;
+            }
+
+            to {
+                box-shadow: 0 0 20px #4ecdc4;
+            }
+        }
+
+        .graph-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .graph-svg {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .graph-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .graph-node:hover {
+            transform: scale(1.1);
+        }
+
+        .graph-edge {
+            stroke: #666;
+            stroke-width: 2;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #4facfe;
+        }
+
+        .step-info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            border-left: 3px solid #2196f3;
+        }
+
+        .speed-control {
+            margin: 15px 0;
+        }
+
+        .speed-slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .color-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .statistics {
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .chess-cell {
+                width: 35px;
+                height: 35px;
+                font-size: 1.5em;
+            }
+
+            .menu-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 主菜单 -->
+        <div id="menu" class="menu">
+            <h1>回溯算法可视化学习</h1>
+            <div class="menu-buttons">
+                <button class="menu-btn" onclick="showAlgorithm('queens')">
+                    👑 八皇后问题
+                </button>
+                <button class="menu-btn" onclick="showAlgorithm('coloring')">
+                    🎨 图着色问题
+                </button>
+            </div>
+            <p style="color: #666; margin-top: 20px; font-size: 1.1em;">
+                选择一个算法开始交互式学习体验
+            </p>
+        </div>
+
+        <!-- 八皇后算法 -->
+        <div id="queens-container" class="algorithm-container">
+            <div class="algorithm-header">
+                <div class="algorithm-title">八皇后问题 - 回溯算法可视化</div>
+                <button class="back-btn" onclick="showMenu()">返回菜单</button>
+            </div>
+            <div class="main-content">
+                <div class="visualization-area">
+                    <div id="chess-board" class="chess-board"></div>
+                    <div class="status-panel">
+                        <div id="queens-status">准备开始：点击"开始求解"按钮</div>
+                    </div>
+                </div>
+                <div class="control-panel">
+                    <h3>控制面板</h3>
+                    <button id="start-queens" class="control-btn">开始求解</button>
+                    <button id="step-queens" class="control-btn" disabled>单步执行</button>
+                    <button id="pause-queens" class="control-btn" disabled>暂停/继续</button>
+                    <button id="reset-queens" class="control-btn">重置</button>
+
+                    <div class="speed-control">
+                        <label>动画速度:</label>
+                        <input type="range" id="queens-speed" class="speed-slider" min="1" max="10" value="5">
+                        <span id="speed-display">中等</span>
+                    </div>
+
+                    <div class="step-info" id="queens-step-info">
+                        算法说明：八皇后问题要求在8×8的棋盘上放置8个皇后，使得任意两个皇后都不能互相攻击。
+                    </div>
+
+                    <div class="statistics" id="queens-stats">
+                        <div>尝试次数: <span id="attempt-count">0</span></div>
+                        <div>回溯次数: <span id="backtrack-count">0</span></div>
+                        <div>当前行: <span id="current-row">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图着色算法 -->
+        <div id="coloring-container" class="algorithm-container">
+            <div class="algorithm-header">
+                <div class="algorithm-title">图着色问题 - 回溯算法可视化</div>
+                <button class="back-btn" onclick="showMenu()">返回菜单</button>
+            </div>
+            <div class="main-content">
+                <div class="visualization-area">
+                    <div class="graph-container">
+                        <svg id="graph-svg" class="graph-svg" width="400" height="300"></svg>
+                    </div>
+                    <div class="color-legend">
+                        <div class="color-item">
+                            <div class="color-box" style="background: #ff6b6b"></div>
+                            <span>红色</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-box" style="background: #4ecdc4"></div>
+                            <span>蓝绿色</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-box" style="background: #45b7d1"></div>
+                            <span>蓝色</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-box" style="background: #f9ca24"></div>
+                            <span>黄色</span>
+                        </div>
+                    </div>
+                    <div class="status-panel">
+                        <div id="coloring-status">准备开始：点击"开始着色"按钮</div>
+                    </div>
+                </div>
+                <div class="control-panel">
+                    <h3>控制面板</h3>
+                    <button id="start-coloring" class="control-btn">开始着色</button>
+                    <button id="step-coloring" class="control-btn" disabled>单步执行</button>
+                    <button id="pause-coloring" class="control-btn" disabled>暂停/继续</button>
+                    <button id="reset-coloring" class="control-btn">重置</button>
+                    <button id="generate-graph" class="control-btn">生成新图</button>
+
+                    <div class="speed-control">
+                        <label>动画速度:</label>
+                        <input type="range" id="coloring-speed" class="speed-slider" min="1" max="10" value="5">
+                        <span id="coloring-speed-display">中等</span>
+                    </div>
+
+                    <div class="step-info" id="coloring-step-info">
+                        算法说明：图着色问题要求给图的每个顶点分配颜色，使得相邻顶点颜色不同，并使用最少的颜色数。
+                    </div>
+
+                    <div class="statistics" id="coloring-stats">
+                        <div>尝试次数: <span id="coloring-attempt-count">0</span></div>
+                        <div>回溯次数: <span id="coloring-backtrack-count">0</span></div>
+                        <div>当前节点: <span id="current-node">-</span></div>
+                        <div>使用颜色数: <span id="colors-used">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentAlgorithm = null;
+        let isAnimating = false;
+        let animationSpeed = 500;
+        let isPaused = false;
+        let stepMode = false;
+
+        // 八皇后相关变量
+        let queensBoard = Array(8).fill().map(() => Array(8).fill(0));
+        let queensSolution = [];
+        let currentRow = 0;
+        let attemptCount = 0;
+        let backtrackCount = 0;
+        let queensAnimationId = null;
+
+        // 图着色相关变量
+        let graph = {
+            nodes: [],
+            edges: [],
+            adjacencyList: {}
+        };
+        let nodeColors = [];
+        let coloringAttemptCount = 0;
+        let coloringBacktrackCount = 0;
+        let currentNodeIndex = 0;
+        let coloringAnimationId = null;
+        let availableColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24'];
+
+        // 显示算法页面
+        function showAlgorithm(algorithm) {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('queens-container').style.display = 'none';
+            document.getElementById('coloring-container').style.display = 'none';
+
+            if (algorithm === 'queens') {
+                document.getElementById('queens-container').style.display = 'block';
+                currentAlgorithm = 'queens';
+                initQueens();
+            } else if (algorithm === 'coloring') {
+                document.getElementById('coloring-container').style.display = 'block';
+                currentAlgorithm = 'coloring';
+                initColoring();
+            }
+        }
+
+        // 显示主菜单
+        function showMenu() {
+            document.getElementById('menu').style.display = 'flex';
+            document.getElementById('queens-container').style.display = 'none';
+            document.getElementById('coloring-container').style.display = 'none';
+            currentAlgorithm = null;
+
+            // 清理动画
+            if (queensAnimationId) clearTimeout(queensAnimationId);
+            if (coloringAnimationId) clearTimeout(coloringAnimationId);
+            isAnimating = false;
+        }
+
+        // 八皇后初始化
+        function initQueens() {
+            const board = document.getElementById('chess-board');
+            board.innerHTML = '';
+
+            // 创建棋盘
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = `chess-cell ${(i + j) % 2 === 0 ? 'white' : 'black'}`;
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    board.appendChild(cell);
+                }
+            }
+
+            // 重置状态
+            queensBoard = Array(8).fill().map(() => Array(8).fill(0));
+            queensSolution = [];
+            currentRow = 0;
+            attemptCount = 0;
+            backtrackCount = 0;
+
+            updateQueensStats();
+            updateQueensStatus('准备开始：点击"开始求解"按钮');
+
+            // 绑定控制按钮事件
+            document.getElementById('start-queens').onclick = startQueens;
+            document.getElementById('step-queens').onclick = stepQueens;
+            document.getElementById('pause-queens').onclick = pauseQueens;
+            document.getElementById('reset-queens').onclick = resetQueens;
+
+            // 速度控制
+            document.getElementById('queens-speed').oninput = function () {
+                const speed = parseInt(this.value);
+                animationSpeed = 1100 - speed * 100;
+                const labels = ['很慢', '慢', '较慢', '中慢', '中等', '中快', '较快', '快', '很快', '极快'];
+                document.getElementById('speed-display').textContent = labels[speed - 1];
+            };
+        }
+
+        // 开始八皇后算法
+        function startQueens() {
+            if (isAnimating) return;
+
+            isAnimating = true;
+            stepMode = false;
+            isPaused = false;
+
+            document.getElementById('start-queens').disabled = true;
+            document.getElementById('step-queens').disabled = true;
+            document.getElementById('pause-queens').disabled = false;
+
+            resetQueensBoard();
+            solveQueens(0);
+        }
+
+        // 单步执行八皇后
+        function stepQueens() {
+            if (isAnimating) return;
+
+            stepMode = true;
+            isAnimating = true;
+
+            document.getElementById('start-queens').disabled = true;
+            document.getElementById('step-queens').disabled = true;
+
+            if (currentRow === 0 && queensSolution.length === 0) {
+                resetQueensBoard();
+            }
+
+            solveQueensStep();
+        }
+
+        // 暂停/继续八皇后
+        function pauseQueens() {
+            isPaused = !isPaused;
+            document.getElementById('pause-queens').textContent = isPaused ? '继续' : '暂停';
+
+            if (!isPaused && isAnimating) {
+                solveQueens(currentRow);
+            }
+        }
+
+        // 重置八皇后
+        function resetQueens() {
+            if (queensAnimationId) clearTimeout(queensAnimationId);
+
+            isAnimating = false;
+            stepMode = false;
+            isPaused = false;
+
+            document.getElementById('start-queens').disabled = false;
+            document.getElementById('step-queens').disabled = false;
+            document.getElementById('pause-queens').disabled = true;
+            document.getElementById('pause-queens').textContent = '暂停';
+
+            resetQueensBoard();
+            currentRow = 0;
+            attemptCount = 0;
+            backtrackCount = 0;
+            queensSolution = [];
+
+            updateQueensStats();
+            updateQueensStatus('已重置：点击"开始求解"或"单步执行"');
+        }
+
+        // 重置棋盘显示
+        function resetQueensBoard() {
+            const cells = document.querySelectorAll('.chess-cell');
+            cells.forEach(cell => {
+                cell.classList.remove('queen', 'attacked', 'trying');
+                cell.textContent = '';
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                cell.className = `chess-cell ${(row + col) % 2 === 0 ? 'white' : 'black'}`;
+            });
+
+            queensBoard = Array(8).fill().map(() => Array(8).fill(0));
+        }
+
+        // 八皇后求解算法
+        async function solveQueens(row) {
+            if (isPaused) return;
+
+            if (row === 8) {
+                updateQueensStatus('🎉 找到解决方案！所有8个皇后都已正确放置！');
+                finishQueensAnimation();
+                return true;
+            }
+
+            currentRow = row;
+            updateQueensStats();
+
+            for (let col = 0; col < 8; col++) {
+                attemptCount++;
+                updateQueensStats();
+
+                if (isSafe(row, col)) {
+                    // 放置皇后
+                    queensSolution[row] = col;
+                    queensBoard[row][col] = 1;
+
+                    highlightCell(row, col, 'trying');
+                    updateQueensStatus(`第${row + 1}行：尝试在列${col + 1}放置皇后...`);
+
+                    queensAnimationId = setTimeout(() => {
+                        placeQueen(row, col);
+
+                        queensAnimationId = setTimeout(() => {
+                            if (solveQueens(row + 1)) {
+                                return true;
+                            }
+
+                            // 回溯
+                            backtrackCount++;
+                            updateQueensStats();
+                            updateQueensStatus(`第${row + 1}行：回溯，移除列${col + 1}的皇后`);
+
+                            removeQueen(row, col);
+                            queensBoard[row][col] = 0;
+                            queensSolution[row] = -1;
+                        }, stepMode ? 0 : animationSpeed);
+                    }, stepMode ? 0 : animationSpeed / 2);
+
+                    if (stepMode) {
+                        document.getElementById('step-queens').disabled = false;
+                        isAnimating = false;
+                        return false;
+                    }
+
+                    return false;
+                } else {
+                    // 显示冲突
+                    highlightAttacked(row, col);
+                    updateQueensStatus(`第${row + 1}行：列${col + 1}位置冲突，尝试下一个位置`);
+
+                    if (stepMode) {
+                        document.getElementById('step-queens').disabled = false;
+                        isAnimating = false;
+                        return false;
+                    }
+
+                    await new Promise(resolve => {
+                        queensAnimationId = setTimeout(resolve, animationSpeed / 3);
+                    });
+                }
+            }
+
+            if (row > 0) {
+                updateQueensStatus(`第${row + 1}行：无可行解，回溯到第${row}行`);
+            }
+
+            return false;
+        }
+
+        // 单步执行逻辑
+        function solveQueensStep() {
+            // 实现单步逻辑（简化版本）
+            if (currentRow >= 8) {
+                updateQueensStatus('🎉 找到解决方案！');
+                finishQueensAnimation();
+                return;
+            }
+
+            // 为演示目的，这里实现一个简化的单步逻辑
+            let placed = false;
+            for (let col = 0; col < 8; col++) {
+                if (isSafe(currentRow, col)) {
+                    queensSolution[currentRow] = col;
+                    queensBoard[currentRow][col] = 1;
+                    placeQueen(currentRow, col);
+                    updateQueensStatus(`第${currentRow + 1}行：在列${col + 1}放置皇后`);
+                    currentRow++;
+                    placed = true;
+                    break;
+                }
+            }
+
+            if (!placed && currentRow > 0) {
+                currentRow--;
+                const col = queensSolution[currentRow];
+                removeQueen(currentRow, col);
+                queensBoard[currentRow][col] = 0;
+                updateQueensStatus(`回溯到第${currentRow + 1}行`);
+            }
+
+            updateQueensStats();
+            document.getElementById('step-queens').disabled = false;
+            isAnimating = false;
+        }
+
+        // 检查位置是否安全
+        function isSafe(row, col) {
+            // 检查列
+            for (let i = 0; i < row; i++) {
+                if (queensBoard[i][col] === 1) return false;
+            }
+
+            // 检查左对角线
+            for (let i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+                if (queensBoard[i][j] === 1) return false;
+            }
+
+            // 检查右对角线
+            for (let i = row - 1, j = col + 1; i >= 0 && j < 8; i--, j++) {
+                if (queensBoard[i][j] === 1) return false;
+            }
+
+            return true;
+        }
+
+        // 高亮单元格
+        function highlightCell(row, col, className) {
+            const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            cell.classList.add(className);
+        }
+
+        // 显示攻击路径
+        function highlightAttacked(row, col) {
+            const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            cell.classList.add('attacked');
+
+            setTimeout(() => {
+                cell.classList.remove('attacked');
+            }, animationSpeed / 2);
+        }
+
+        // 放置皇后
+        function placeQueen(row, col) {
+            const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            cell.classList.remove('trying');
+            cell.classList.add('queen');
+            cell.textContent = '♕';
+        }
+
+        // 移除皇后
+        function removeQueen(row, col) {
+            const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            cell.classList.remove('queen', 'trying');
+            cell.textContent = '';
+        }
+
+        // 完成动画
+        function finishQueensAnimation() {
+            isAnimating = false;
+            document.getElementById('start-queens').disabled = false;
+            document.getElementById('step-queens').disabled = false;
+            document.getElementById('pause-queens').disabled = true;
+        }
+
+        // 更新八皇后状态
+        function updateQueensStatus(message) {
+            document.getElementById('queens-status').textContent = message;
+        }
+
+        // 更新八皇后统计
+        function updateQueensStats() {
+            document.getElementById('attempt-count').textContent = attemptCount;
+            document.getElementById('backtrack-count').textContent = backtrackCount;
+            document.getElementById('current-row').textContent = currentRow + 1;
+        }
+
+        // 图着色初始化
+        function initColoring() {
+            generateRandomGraph();
+
+            // 重置状态
+            nodeColors = [];
+            coloringAttemptCount = 0;
+            coloringBacktrackCount = 0;
+            currentNodeIndex = 0;
+
+            updateColoringStats();
+            updateColoringStatus('准备开始：点击"开始着色"按钮');
+
+            // 绑定控制按钮事件
+            document.getElementById('start-coloring').onclick = startColoring;
+            document.getElementById('step-coloring').onclick = stepColoring;
+            document.getElementById('pause-coloring').onclick = pauseColoring;
+            document.getElementById('reset-coloring').onclick = resetColoring;
+            document.getElementById('generate-graph').onclick = generateNewGraph;
+
+            // 速度控制
+            document.getElementById('coloring-speed').oninput = function () {
+                const speed = parseInt(this.value);
+                animationSpeed = 1100 - speed * 100;
+                const labels = ['很慢', '慢', '较慢', '中慢', '中等', '中快', '较快', '快', '很快', '极快'];
+                document.getElementById('coloring-speed-display').textContent = labels[speed - 1];
+            };
+        }
+
+        // 生成随机图
+        function generateRandomGraph() {
+            const nodeCount = 6;
+            const svg = document.getElementById('graph-svg');
+            svg.innerHTML = '';
+
+            // 初始化图结构
+            graph.nodes = [];
+            graph.edges = [];
+            graph.adjacencyList = {};
+
+            // 生成节点位置
+            const centerX = 200;
+            const centerY = 150;
+            const radius = 100;
+
+            for (let i = 0; i < nodeCount; i++) {
+                const angle = (i / nodeCount) * 2 * Math.PI;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                graph.nodes.push({ id: i, x: x, y: y });
+                graph.adjacencyList[i] = [];
+            }
+
+            // 生成边（确保图连通且有足够的约束）
+            const edges = [
+                [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], // 环形基础结构
+                [0, 3], [1, 4], [2, 5] // 添加一些交叉边增加复杂度
+            ];
+
+            edges.forEach(([from, to]) => {
+                if (!graph.adjacencyList[from].includes(to)) {
+                    graph.edges.push({ from, to });
+                    graph.adjacencyList[from].push(to);
+                    graph.adjacencyList[to].push(from);
+                }
+            });
+
+            drawGraph();
+        }
+
+        // 绘制图
+        function drawGraph() {
+            const svg = document.getElementById('graph-svg');
+            svg.innerHTML = '';
+
+            // 绘制边
+            graph.edges.forEach(edge => {
+                const fromNode = graph.nodes[edge.from];
+                const toNode = graph.nodes[edge.to];
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', fromNode.x);
+                line.setAttribute('y1', fromNode.y);
+                line.setAttribute('x2', toNode.x);
+                line.setAttribute('y2', toNode.y);
+                line.classList.add('graph-edge');
+                svg.appendChild(line);
+            });
+
+            // 绘制节点
+            graph.nodes.forEach((node, index) => {
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                group.classList.add('graph-node');
+                group.setAttribute('data-node', index);
+
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', node.x);
+                circle.setAttribute('cy', node.y);
+                circle.setAttribute('r', 25);
+                circle.setAttribute('fill', '#fff');
+                circle.setAttribute('stroke', '#333');
+                circle.setAttribute('stroke-width', 2);
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', node.x);
+                text.setAttribute('y', node.y + 5);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('font-size', '16');
+                text.setAttribute('font-weight', 'bold');
+                text.textContent = index;
+
+                group.appendChild(circle);
+                group.appendChild(text);
+                svg.appendChild(group);
+            });
+        }
+
+        // 开始图着色
+        function startColoring() {
+            if (isAnimating) return;
+
+            isAnimating = true;
+            stepMode = false;
+            isPaused = false;
+
+            document.getElementById('start-coloring').disabled = true;
+            document.getElementById('step-coloring').disabled = true;
+            document.getElementById('pause-coloring').disabled = false;
+
+            resetColoring();
+            solveColoring(0);
+        }
+
+        // 单步执行图着色
+        function stepColoring() {
+            if (isAnimating) return;
+
+            stepMode = true;
+            isAnimating = true;
+
+            document.getElementById('start-coloring').disabled = true;
+            document.getElementById('step-coloring').disabled = true;
+
+            if (currentNodeIndex === 0 && nodeColors.length === 0) {
+                resetColoring();
+            }
+
+            solveColoringStep();
+        }
+
+        // 暂停/继续图着色
+        function pauseColoring() {
+            isPaused = !isPaused;
+            document.getElementById('pause-coloring').textContent = isPaused ? '继续' : '暂停';
+
+            if (!isPaused && isAnimating) {
+                solveColoring(currentNodeIndex);
+            }
+        }
+
+        // 重置图着色
+        function resetColoring() {
+            if (coloringAnimationId) clearTimeout(coloringAnimationId);
+
+            isAnimating = false;
+            stepMode = false;
+            isPaused = false;
+
+            document.getElementById('start-coloring').disabled = false;
+            document.getElementById('step-coloring').disabled = false;
+            document.getElementById('pause-coloring').disabled = true;
+            document.getElementById('pause-coloring').textContent = '暂停';
+
+            nodeColors = Array(graph.nodes.length).fill(-1);
+            currentNodeIndex = 0;
+            coloringAttemptCount = 0;
+            coloringBacktrackCount = 0;
+
+            // 重置节点颜色
+            graph.nodes.forEach((node, index) => {
+                const nodeElement = document.querySelector(`[data-node="${index}"] circle`);
+                nodeElement.setAttribute('fill', '#fff');
+                nodeElement.setAttribute('stroke', '#333');
+                nodeElement.setAttribute('stroke-width', 2);
+            });
+
+            updateColoringStats();
+            updateColoringStatus('已重置：点击"开始着色"或"单步执行"');
+        }
+
+        // 生成新图
+        function generateNewGraph() {
+            resetColoring();
+            generateRandomGraph();
+            updateColoringStatus('已生成新图：点击"开始着色"开始算法');
+        }
+
+        // 图着色求解算法
+        async function solveColoring(nodeIndex) {
+            if (isPaused) return;
+
+            if (nodeIndex === graph.nodes.length) {
+                updateColoringStatus('🎉 图着色完成！所有节点都已成功着色！');
+                finishColoringAnimation();
+                return true;
+            }
+
+            currentNodeIndex = nodeIndex;
+            updateColoringStats();
+
+            for (let colorIndex = 0; colorIndex < availableColors.length; colorIndex++) {
+                coloringAttemptCount++;
+                updateColoringStats();
+
+                if (isColorSafe(nodeIndex, colorIndex)) {
+                    // 尝试颜色
+                    highlightNode(nodeIndex, 'trying');
+                    updateColoringStatus(`节点${nodeIndex}：尝试颜色${colorIndex + 1}...`);
+
+                    await new Promise(resolve => {
+                        coloringAnimationId = setTimeout(resolve, stepMode ? 0 : animationSpeed / 2);
+                    });
+
+                    // 应用颜色
+                    nodeColors[nodeIndex] = colorIndex;
+                    colorNode(nodeIndex, colorIndex);
+
+                    updateColoringStatus(`节点${nodeIndex}：使用颜色${colorIndex + 1}`);
+
+                    await new Promise(resolve => {
+                        coloringAnimationId = setTimeout(resolve, stepMode ? 0 : animationSpeed);
+                    });
+
+                    if (await solveColoring(nodeIndex + 1)) {
+                        return true;
+                    }
+
+                    // 回溯
+                    coloringBacktrackCount++;
+                    updateColoringStats();
+                    updateColoringStatus(`节点${nodeIndex}：回溯，移除颜色${colorIndex + 1}`);
+
+                    nodeColors[nodeIndex] = -1;
+                    resetNodeColor(nodeIndex);
+
+                    if (stepMode) {
+                        document.getElementById('step-coloring').disabled = false;
+                        isAnimating = false;
+                        return false;
+                    }
+
+                    await new Promise(resolve => {
+                        coloringAnimationId = setTimeout(resolve, animationSpeed / 2);
+                    });
+                } else {
+                    // 显示冲突
+                    highlightNode(nodeIndex, 'conflict');
+                    updateColoringStatus(`节点${nodeIndex}：颜色${colorIndex + 1}冲突，尝试下一颜色`);
+
+                    if (stepMode) {
+                        document.getElementById('step-coloring').disabled = false;
+                        isAnimating = false;
+                        return false;
+                    }
+
+                    await new Promise(resolve => {
+                        coloringAnimationId = setTimeout(resolve, animationSpeed / 3);
+                    });
+
+                    resetNodeHighlight(nodeIndex);
+                }
+            }
+
+            updateColoringStatus(`节点${nodeIndex}：无可用颜色，回溯`);
+            return false;
+        }
+
+        // 单步执行图着色逻辑
+        function solveColoringStep() {
+            if (currentNodeIndex >= graph.nodes.length) {
+                updateColoringStatus('🎉 图着色完成！');
+                finishColoringAnimation();
+                return;
+            }
+
+            // 简化的单步逻辑
+            let colored = false;
+            for (let colorIndex = 0; colorIndex < availableColors.length; colorIndex++) {
+                if (isColorSafe(currentNodeIndex, colorIndex)) {
+                    nodeColors[currentNodeIndex] = colorIndex;
+                    colorNode(currentNodeIndex, colorIndex);
+                    updateColoringStatus(`节点${currentNodeIndex}：使用颜色${colorIndex + 1}`);
+                    currentNodeIndex++;
+                    colored = true;
+                    break;
+                }
+            }
+
+            if (!colored && currentNodeIndex > 0) {
+                currentNodeIndex--;
+                resetNodeColor(currentNodeIndex);
+                nodeColors[currentNodeIndex] = -1;
+                updateColoringStatus(`回溯到节点${currentNodeIndex}`);
+            }
+
+            updateColoringStats();
+            document.getElementById('step-coloring').disabled = false;
+            isAnimating = false;
+        }
+
+        // 检查颜色是否安全
+        function isColorSafe(nodeIndex, colorIndex) {
+            const neighbors = graph.adjacencyList[nodeIndex];
+            for (let neighbor of neighbors) {
+                if (nodeColors[neighbor] === colorIndex) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // 高亮节点
+        function highlightNode(nodeIndex, type) {
+            const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
+            if (type === 'trying') {
+                nodeElement.setAttribute('stroke', '#4ecdc4');
+                nodeElement.setAttribute('stroke-width', 4);
+            } else if (type === 'conflict') {
+                nodeElement.setAttribute('stroke', '#ff6b6b');
+                nodeElement.setAttribute('stroke-width', 4);
+            }
+        }
+
+        // 为节点着色
+        function colorNode(nodeIndex, colorIndex) {
+            const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
+            nodeElement.setAttribute('fill', availableColors[colorIndex]);
+            nodeElement.setAttribute('stroke', '#333');
+            nodeElement.setAttribute('stroke-width', 2);
+        }
+
+        // 重置节点颜色
+        function resetNodeColor(nodeIndex) {
+            const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
+            nodeElement.setAttribute('fill', '#fff');
+            nodeElement.setAttribute('stroke', '#333');
+            nodeElement.setAttribute('stroke-width', 2);
+        }
+
+        // 重置节点高亮
+        function resetNodeHighlight(nodeIndex) {
+            const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
+            nodeElement.setAttribute('stroke', '#333');
+            nodeElement.setAttribute('stroke-width', 2);
+        }
+
+        // 完成着色动画
+        function finishColoringAnimation() {
+            isAnimating = false;
+            document.getElementById('start-coloring').disabled = false;
+            document.getElementById('step-coloring').disabled = false;
+            document.getElementById('pause-coloring').disabled = true;
+        }
+
+        // 更新图着色状态
+        function updateColoringStatus(message) {
+            document.getElementById('coloring-status').textContent = message;
+        }
+
+        // 更新图着色统计
+        function updateColoringStats() {
+            document.getElementById('coloring-attempt-count').textContent = coloringAttemptCount;
+            document.getElementById('coloring-backtrack-count').textContent = coloringBacktrackCount;
+            document.getElementById('current-node').textContent = currentNodeIndex;
+
+            const usedColors = new Set(nodeColors.filter(color => color !== -1));
+            document.getElementById('colors-used').textContent = usedColors.size;
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            // 默认显示菜单
+            showMenu();
+        });
+    </script>
+</body>
+
+</html>
