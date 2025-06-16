@@ -270,6 +270,25 @@
             border-left: 3px solid #b8a898;
         }
 
+        .step-info .step-info {
+            background: #f8f5f2;
+            margin: 8px 0;
+            padding: 8px;
+            border-left: 2px solid #d4c5b9;
+            font-size: 0.85em;
+        }
+
+        .step-info h5 {
+            color: #8b7d6b;
+            margin: 0 0 5px 0;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .problem-description {
+            font-size: 0.8em;
+        }
+
         .speed-control {
             margin: 15px 0;
         }
@@ -637,25 +656,44 @@
                 </div>
                 <div class="algorithm-info">
                     <h3>算法详解</h3>
-                    <div class="step-info">
+                    
+                    <div class="step-info problem-description">
                         <h4>问题描述</h4>
                         <p>N皇后问题要求在N×N的棋盘上放置N个皇后，使得任意两个皇后都不能互相攻击。即任意两个皇后都不能处在同一行、同一列或同一斜线上。</p>
-                        
+                    </div>
+
+                    <div class="step-info">
                         <h4>算法思路</h4>
-                        <p>1. <strong>逐行放置：</strong>从第一行开始，逐行尝试放置皇后</p>
-                        <p>2. <strong>冲突检测：</strong>对于每一行的每个位置，检查是否与已放置的皇后冲突</p>
-                        <p>3. <strong>回溯机制：</strong>如果当前行无法放置皇后，则回溯到上一行重新选择</p>
-                        <p>4. <strong>终止条件：</strong>成功放置N个皇后或回溯到起始状态</p>
-                        
-                        <h4>交互方式</h4>
-                        <p>• <strong>自动求解：</strong>算法自动寻找解决方案</p>
-                        <p>• <strong>手动放置：</strong>点击棋盘手动放置皇后</p>
-                        <p>• <strong>单步执行：</strong>逐步观察算法执行过程</p>
-                        <p>• <strong>查找所有解：</strong>找出所有可能的解决方案</p>
-                        
+                        <div class="step-info">
+                            <h5>1. 逐行放置策略</h5>
+                            <p>从第一行开始，逐行尝试在每一行放置一个皇后，确保每行恰好有一个皇后。</p>
+                        </div>
+                        <div class="step-info">
+                            <h5>2. 冲突检测机制</h5>
+                            <p>对于每个位置，检查是否与已放置的皇后发生冲突：</p>
+                            <p>• <strong>列冲突：</strong>检查同一列是否已有皇后</p>
+                            <p>• <strong>对角线冲突：</strong>检查左上-右下和右上-左下对角线</p>
+                        </div>
+                        <div class="step-info">
+                            <h5>3. 回溯搜索</h5>
+                            <p>若当前行无法放置皇后，则回溯到上一行，移除该行的皇后并尝试下一个位置。</p>
+                        </div>
+                        <div class="step-info">
+                            <h5>4. 搜索状态管理</h5>
+                            <p>使用搜索栈保存每一步的状态，支持暂停、继续和单步执行功能。</p>
+                        </div>
+                    </div>
+
+                    <div class="step-info">
                         <h4>复杂度分析</h4>
-                        <p>时间复杂度：最坏情况下为O(N!)，平均情况约为O(N^N)</p>
-                        <p>空间复杂度：O(N)，用于存储皇后位置</p>
+                        <div class="step-info">
+                            <h5>时间复杂度</h5>
+                            <p><strong>O(N!)：</strong>最坏情况下需要尝试N!种排列，但实际运行中由于剪枝效果会大大减少搜索空间。</p>
+                        </div>
+                        <div class="step-info">
+                            <h5>空间复杂度</h5>
+                            <p><strong>O(N)：</strong>需要存储皇后位置数组、搜索栈等辅助数据结构。</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -750,22 +788,45 @@
                 </div>
                 <div class="algorithm-info">
                     <h3>算法详解</h3>
-                    <div class="step-info">
+                    
+                    <div class="step-info problem-description">
                         <h4>问题描述</h4>
-                        <p>图着色问题要求给图的每个顶点分配颜色，使得相邻顶点颜色不同，并找到使用最少颜色数的着色方案。这是一个经典的NP完全优化问题。</p>
-                        
+                        <p>图着色问题要求给图的每个顶点分配颜色，使得相邻顶点颜色不同，并找到使用最少颜色数的着色方案。</p>
+                    </div>
+
+                    <div class="step-info">
                         <h4>算法思路</h4>
-                        <p>1. <strong>最优解搜索：</strong>从1种颜色开始，逐步增加颜色数直到找到可行解</p>
-                        <p>2. <strong>回溯搜索：</strong>在每个颜色数限制下使用回溯算法尝试着色</p>
-                        <p>3. <strong>剪枝优化：</strong>一旦找到可行解，即为最优解（最少颜色数）</p>
-                        <p>2. <strong>颜色检查：</strong>对于每个节点，尝试可用的颜色，检查是否与相邻节点冲突</p>
-                        <p>3. <strong>回溯搜索：</strong>如果无法为当前节点找到合适颜色，回溯到前一个节点重新选择</p>
-                        <p>4. <strong>最优化：</strong>尝试使用最少的颜色完成整个图的着色</p>
-                        
-                        <h4>应用场景</h4>
-                        <p>• 调度问题（如课程安排）</p>
-                        <p>• 频谱分配</p>
-                        <p>• 寄存器分配</p>
+                        <div class="step-info">
+                            <h5>1. 最优解搜索策略</h5>
+                            <p>从1种颜色开始，逐步增加颜色数，直到找到第一个可行的着色方案，该方案即为最优解。</p>
+                        </div>
+                        <div class="step-info">
+                            <h5>2. 回溯搜索机制</h5>
+                            <p>在每个颜色数限制下，按节点顺序依次尝试着色：</p>
+                            <p>• 对当前节点尝试所有可用颜色</p>
+                            <p>• 检查与相邻节点是否产生冲突</p>
+                            <p>• 若无冲突则继续下一节点，否则回溯</p>
+                        </div>
+                        <div class="step-info">
+                            <h5>3. 冲突检测优化</h5>
+                            <p>只需检查当前节点与其直接相邻节点的颜色冲突，时间复杂度为O(度数)。</p>
+                        </div>
+                        <div class="step-info">
+                            <h5>4. 图结构生成</h5>
+                            <p>随机生成多种专门设计的回溯图结构，包括完全图、轮图、星形图等，充分展示回溯过程。</p>
+                        </div>
+                    </div>
+
+                    <div class="step-info">
+                        <h4>复杂度分析</h4>
+                        <div class="step-info">
+                            <h5>时间复杂度</h5>
+                            <p><strong>O(k^n)：</strong>其中n是节点数，k是颜色数。最坏情况下需要尝试每个节点的所有颜色组合。</p>
+                        </div>
+                        <div class="step-info">
+                            <h5>空间复杂度</h5>
+                            <p><strong>O(n)：</strong>存储图结构、颜色分配数组和递归调用栈。</p>
+                        </div>
                     </div>
                 </div>
             </div>
