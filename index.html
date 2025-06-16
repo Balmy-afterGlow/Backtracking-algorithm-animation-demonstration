@@ -45,33 +45,43 @@
         .menu h1 {
             font-size: 2.5em;
             color: #8b7d6b;
-            margin-bottom: 30px;
+            margin-bottom: 50px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .menu-buttons {
             display: flex;
-            gap: 30px;
+            gap: 40px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 900px;
         }
 
         .menu-btn {
             background: linear-gradient(135deg, #c8b8a8 0%, #b8a898 100%);
             color: #5c5448;
             border: none;
-            padding: 20px 40px;
-            font-size: 1.2em;
-            border-radius: 15px;
+            padding: 60px 80px;
+            font-size: 1.8em;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            flex: 1;
+            min-width: 350px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 500;
         }
 
         .menu-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
             background: linear-gradient(135deg, #b8a898 0%, #a89888 100%);
         }
 
@@ -358,7 +368,7 @@
 
         .menu-description {
             color: #8b7d6b;
-            margin-top: 20px;
+            margin-top: 40px;
             font-size: 1.1em;
         }
 
@@ -581,6 +591,19 @@
             .menu-buttons {
                 flex-direction: column;
                 align-items: center;
+                gap: 20px;
+            }
+
+            .menu-btn {
+                min-width: 280px;
+                min-height: 120px;
+                padding: 40px 50px;
+                font-size: 1.4em;
+            }
+
+            .menu h1 {
+                font-size: 2em;
+                margin-bottom: 30px;
             }
         }
     </style>
