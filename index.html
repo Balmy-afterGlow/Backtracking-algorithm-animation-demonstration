@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #d4c5b9 0%, #c8b8a8 50%, #b8a898 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,13 +22,14 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(248, 245, 242, 0.95);
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             width: 95%;
-            max-width: 1200px;
+            max-width: 1400px;
             min-height: 80vh;
             padding: 20px;
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
         }
 
@@ -43,9 +44,9 @@
 
         .menu h1 {
             font-size: 2.5em;
-            color: #4a5568;
+            color: #8b7d6b;
             margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .menu-buttons {
@@ -57,20 +58,21 @@
         }
 
         .menu-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #c8b8a8 0%, #b8a898 100%);
+            color: #5c5448;
             border: none;
             padding: 20px 40px;
             font-size: 1.2em;
             border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .menu-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #b8a898 0%, #a89888 100%);
         }
 
         .algorithm-container {
@@ -84,9 +86,9 @@
             align-items: center;
             margin-bottom: 20px;
             padding: 15px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #d4c5b9 0%, #c8b8a8 100%);
             border-radius: 10px;
-            color: white;
+            color: #5c5448;
         }
 
         .algorithm-title {
@@ -95,8 +97,8 @@
         }
 
         .back-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            background: rgba(92, 84, 72, 0.2);
+            color: #5c5448;
             border: none;
             padding: 10px 20px;
             border-radius: 8px;
@@ -105,7 +107,7 @@
         }
 
         .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(92, 84, 72, 0.3);
         }
 
         .main-content {
@@ -115,11 +117,11 @@
         }
 
         .visualization-area {
-            flex: 2;
-            background: white;
+            flex: 3;
+            background: #f8f5f2;
             border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -127,17 +129,26 @@
 
         .control-panel {
             flex: 1;
-            background: white;
+            background: #f8f5f2;
             border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .algorithm-info {
+            flex: 1;
+            background: #f8f5f2;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-left: 20px;
         }
 
         .chess-board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             gap: 2px;
-            background: #8b4513;
+            background: #a89888;
             padding: 10px;
             border-radius: 10px;
             margin: 20px 0;
@@ -156,25 +167,25 @@
         }
 
         .chess-cell.white {
-            background: #f0d9b5;
+            background: #f0ead6;
         }
 
         .chess-cell.black {
-            background: #b58863;
+            background: #d4c5b9;
         }
 
         .chess-cell.queen {
-            background: #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            background: #e6d7c3;
+            box-shadow: 0 0 10px rgba(184, 168, 152, 0.5);
         }
 
         .chess-cell.attacked {
-            background: #ff6b6b !important;
+            background: #d4a574 !important;
             animation: pulse 0.5s ease-in-out;
         }
 
         .chess-cell.trying {
-            background: #4ecdc4 !important;
+            background: #c8b8a8 !important;
             animation: glow 1s ease-in-out infinite alternate;
         }
 
@@ -194,11 +205,11 @@
 
         @keyframes glow {
             from {
-                box-shadow: 0 0 5px #4ecdc4;
+                box-shadow: 0 0 5px #c8b8a8;
             }
 
             to {
-                box-shadow: 0 0 20px #4ecdc4;
+                box-shadow: 0 0 20px #c8b8a8;
             }
         }
 
@@ -210,9 +221,9 @@
         }
 
         .graph-svg {
-            border: 2px solid #ddd;
+            border: 2px solid #d4c5b9;
             border-radius: 10px;
-            background: white;
+            background: #f8f5f2;
         }
 
         .graph-node {
@@ -225,13 +236,13 @@
         }
 
         .graph-edge {
-            stroke: #666;
+            stroke: #8b7d6b;
             stroke-width: 2;
         }
 
         .control-btn {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
+            background: linear-gradient(135deg, #c8b8a8 0%, #b8a898 100%);
+            color: #5c5448;
             border: none;
             padding: 12px 24px;
             margin: 5px;
@@ -244,30 +255,32 @@
 
         .control-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #b8a898 0%, #a89888 100%);
         }
 
         .control-btn:disabled {
-            background: #ccc;
+            background: #e0d5ca;
+            color: #a0958a;
             cursor: not-allowed;
             transform: none;
         }
 
         .status-panel {
-            background: #f8f9fa;
+            background: #f0ead6;
             padding: 15px;
             border-radius: 10px;
             margin: 15px 0;
-            border-left: 4px solid #4facfe;
+            border-left: 4px solid #c8b8a8;
         }
 
         .step-info {
-            background: #e3f2fd;
+            background: #f0ead6;
             padding: 10px;
             border-radius: 8px;
             margin: 10px 0;
             font-size: 0.9em;
-            border-left: 3px solid #2196f3;
+            border-left: 3px solid #b8a898;
         }
 
         .speed-control {
@@ -321,11 +334,129 @@
         }
 
         .statistics {
-            background: #f0f8ff;
+            background: #f0ead6;
             padding: 10px;
             border-radius: 8px;
             margin: 10px 0;
             font-size: 0.9em;
+        }
+
+        .menu-description {
+            color: #8b7d6b;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+
+        .color-legend-red {
+            background: #d4a574;
+        }
+
+        .color-legend-teal {
+            background: #a4b5a0;
+        }
+
+        .color-legend-blue {
+            background: #9bb5c7;
+        }
+
+        .color-legend-yellow {
+            background: #d4c5a0;
+        }
+
+        .n-queens-selector {
+            margin: 15px 0;
+        }
+
+        .board-size-input {
+            width: 60px;
+            padding: 5px;
+            border: 2px solid #d4c5b9;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1em;
+            background: #f8f5f2;
+            color: #5c5448;
+        }
+
+        .board-size-input:focus {
+            outline: none;
+            border-color: #c8b8a8;
+        }
+
+        .interaction-mode {
+            margin: 15px 0;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .mode-btn {
+            background: #e0d5ca;
+            color: #a0958a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #c8b8a8 0%, #b8a898 100%);
+            color: #5c5448;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-btn:hover:not(.active) {
+            background: #d4c5b9;
+            color: #8b7d6b;
+        }
+
+        .chess-cell.manual-highlight {
+            background: #e6d7c3 !important;
+            box-shadow: 0 0 15px rgba(200, 184, 168, 0.8);
+            animation: manualGlow 1s ease-in-out infinite alternate;
+        }
+
+        .chess-cell.invalid-position {
+            background: #d4a574 !important;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes manualGlow {
+            from {
+                box-shadow: 0 0 10px rgba(200, 184, 168, 0.5);
+            }
+
+            to {
+                box-shadow: 0 0 20px rgba(200, 184, 168, 0.9);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-3px);
+            }
+            75% {
+                transform: translateX(3px);
+            }
+        }
+
+        .solution-indicator {
+            background: #a4b5a0;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            font-size: 0.9em;
+            text-align: center;
         }
 
         @media (max-width: 768px) {
@@ -354,13 +485,13 @@
             <h1>回溯算法可视化学习</h1>
             <div class="menu-buttons">
                 <button class="menu-btn" onclick="showAlgorithm('queens')">
-                    👑 八皇后问题
+                    👑 N皇后问题
                 </button>
                 <button class="menu-btn" onclick="showAlgorithm('coloring')">
                     🎨 图着色问题
                 </button>
             </div>
-            <p style="color: #666; margin-top: 20px; font-size: 1.1em;">
+            <p class="menu-description">
                 选择一个算法开始交互式学习体验
             </p>
         </div>
@@ -368,7 +499,7 @@
         <!-- 八皇后算法 -->
         <div id="queens-container" class="algorithm-container">
             <div class="algorithm-header">
-                <div class="algorithm-title">八皇后问题 - 回溯算法可视化</div>
+                <div class="algorithm-title">N皇后问题 - 回溯算法可视化</div>
                 <button class="back-btn" onclick="showMenu()">返回菜单</button>
             </div>
             <div class="main-content">
@@ -380,25 +511,64 @@
                 </div>
                 <div class="control-panel">
                     <h3>控制面板</h3>
-                    <button id="start-queens" class="control-btn">开始求解</button>
-                    <button id="step-queens" class="control-btn" disabled>单步执行</button>
-                    <button id="pause-queens" class="control-btn" disabled>暂停/继续</button>
-                    <button id="reset-queens" class="control-btn">重置</button>
-
-                    <div class="speed-control">
-                        <label>动画速度:</label>
-                        <input type="range" id="queens-speed" class="speed-slider" min="1" max="10" value="5">
-                        <span id="speed-display">中等</span>
+                    
+                    <div class="n-queens-selector">
+                        <label>棋盘大小：
+                            <input type="number" id="board-size-input" class="board-size-input" min="4" max="12" value="8">
+                            ×
+                            <span id="board-size-display">8</span>
+                        </label>
                     </div>
 
-                    <div class="step-info" id="queens-step-info">
-                        算法说明：八皇后问题要求在8×8的棋盘上放置8个皇后，使得任意两个皇后都不能互相攻击。
+                    <button id="start-queens" class="control-btn">开始求解</button>
+                    <button id="step-queens" class="control-btn" disabled>单步执行</button>
+                    <button id="pause-queens" class="control-btn" disabled>暂停</button>
+                    <button id="reset-queens" class="control-btn">重置</button>
+                    <button id="find-all-solutions" class="control-btn">查找所有解</button>
+
+                    <div class="speed-control">
+                        <label>动画速度：<span id="speed-display">中等</span></label>
+                        <input type="range" id="queens-speed" class="speed-slider" min="1" max="10" value="5">
+                    </div>
+
+                    <div class="interaction-mode">
+                        <label>交互模式：</label>
+                        <div class="mode-buttons">
+                            <button id="auto-mode" class="mode-btn">自动求解</button>
+                            <button id="manual-mode" class="mode-btn">手动放置</button>
+                        </div>
                     </div>
 
                     <div class="statistics" id="queens-stats">
+                        <div>棋盘大小: <span id="current-board-size">8</span></div>
                         <div>尝试次数: <span id="attempt-count">0</span></div>
                         <div>回溯次数: <span id="backtrack-count">0</span></div>
                         <div>当前行: <span id="current-row">0</span></div>
+                        <div>找到解数: <span id="solutions-found">0</span></div>
+                        <div>执行时间: <span id="execution-time">0</span>ms</div>
+                    </div>
+                </div>
+                <div class="algorithm-info">
+                    <h3>算法详解</h3>
+                    <div class="step-info">
+                        <h4>问题描述</h4>
+                        <p>N皇后问题要求在N×N的棋盘上放置N个皇后，使得任意两个皇后都不能互相攻击。即任意两个皇后都不能处在同一行、同一列或同一斜线上。</p>
+                        
+                        <h4>算法思路</h4>
+                        <p>1. <strong>逐行放置：</strong>从第一行开始，逐行尝试放置皇后</p>
+                        <p>2. <strong>冲突检测：</strong>对于每一行的每个位置，检查是否与已放置的皇后冲突</p>
+                        <p>3. <strong>回溯机制：</strong>如果当前行无法放置皇后，则回溯到上一行重新选择</p>
+                        <p>4. <strong>终止条件：</strong>成功放置N个皇后或回溯到起始状态</p>
+                        
+                        <h4>交互方式</h4>
+                        <p>• <strong>自动求解：</strong>算法自动寻找解决方案</p>
+                        <p>• <strong>手动放置：</strong>点击棋盘手动放置皇后</p>
+                        <p>• <strong>单步执行：</strong>逐步观察算法执行过程</p>
+                        <p>• <strong>查找所有解：</strong>找出所有可能的解决方案</p>
+                        
+                        <h4>复杂度分析</h4>
+                        <p>时间复杂度：最坏情况下为O(N!)，平均情况约为O(N^N)</p>
+                        <p>空间复杂度：O(N)，用于存储皇后位置</p>
                     </div>
                 </div>
             </div>
@@ -417,20 +587,20 @@
                     </div>
                     <div class="color-legend">
                         <div class="color-item">
-                            <div class="color-box" style="background: #ff6b6b"></div>
-                            <span>红色</span>
+                            <div class="color-box color-legend-red"></div>
+                            <span>红棕色</span>
                         </div>
                         <div class="color-item">
-                            <div class="color-box" style="background: #4ecdc4"></div>
-                            <span>蓝绿色</span>
+                            <div class="color-box color-legend-teal"></div>
+                            <span>青绿色</span>
                         </div>
                         <div class="color-item">
-                            <div class="color-box" style="background: #45b7d1"></div>
-                            <span>蓝色</span>
+                            <div class="color-box color-legend-blue"></div>
+                            <span>蓝灰色</span>
                         </div>
                         <div class="color-item">
-                            <div class="color-box" style="background: #f9ca24"></div>
-                            <span>黄色</span>
+                            <div class="color-box color-legend-yellow"></div>
+                            <span>米黄色</span>
                         </div>
                     </div>
                     <div class="status-panel">
@@ -446,13 +616,8 @@
                     <button id="generate-graph" class="control-btn">生成新图</button>
 
                     <div class="speed-control">
-                        <label>动画速度:</label>
+                        <label>动画速度：<span id="coloring-speed-display">中等</span></label>
                         <input type="range" id="coloring-speed" class="speed-slider" min="1" max="10" value="5">
-                        <span id="coloring-speed-display">中等</span>
-                    </div>
-
-                    <div class="step-info" id="coloring-step-info">
-                        算法说明：图着色问题要求给图的每个顶点分配颜色，使得相邻顶点颜色不同，并使用最少的颜色数。
                     </div>
 
                     <div class="statistics" id="coloring-stats">
@@ -460,6 +625,24 @@
                         <div>回溯次数: <span id="coloring-backtrack-count">0</span></div>
                         <div>当前节点: <span id="current-node">-</span></div>
                         <div>使用颜色数: <span id="colors-used">0</span></div>
+                    </div>
+                </div>
+                <div class="algorithm-info">
+                    <h3>算法详解</h3>
+                    <div class="step-info">
+                        <h4>问题描述</h4>
+                        <p>图着色问题要求给图的每个顶点分配颜色，使得相邻顶点颜色不同，并尽可能使用最少的颜色数。这是一个经典的NP完全问题。</p>
+                        
+                        <h4>算法思路</h4>
+                        <p>1. <strong>顺序着色：</strong>按照节点编号顺序依次为每个节点着色</p>
+                        <p>2. <strong>颜色检查：</strong>对于每个节点，尝试可用的颜色，检查是否与相邻节点冲突</p>
+                        <p>3. <strong>回溯搜索：</strong>如果无法为当前节点找到合适颜色，回溯到前一个节点重新选择</p>
+                        <p>4. <strong>最优化：</strong>尝试使用最少的颜色完成整个图的着色</p>
+                        
+                        <h4>应用场景</h4>
+                        <p>• 调度问题（如课程安排）</p>
+                        <p>• 频谱分配</p>
+                        <p>• 寄存器分配</p>
                     </div>
                 </div>
             </div>
@@ -475,12 +658,19 @@
         let stepMode = false;
 
         // 八皇后相关变量
-        let queensBoard = Array(8).fill().map(() => Array(8).fill(0));
+        let boardSize = 8;
+        let queensBoard = [];
         let queensSolution = [];
         let currentRow = 0;
         let attemptCount = 0;
         let backtrackCount = 0;
         let queensAnimationId = null;
+        let solutionsFound = 0;
+        let allSolutions = [];
+        let startTime = 0;
+        let isManualMode = false;
+        let manualQueens = [];
+        let findingAllSolutions = false;
 
         // 图着色相关变量
         let graph = {
@@ -493,7 +683,7 @@
         let coloringBacktrackCount = 0;
         let currentNodeIndex = 0;
         let coloringAnimationId = null;
-        let availableColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24'];
+        let availableColors = ['#d4a574', '#a4b5a0', '#9bb5c7', '#d4c5a0'];
 
         // 显示算法页面
         function showAlgorithm(algorithm) {
@@ -527,35 +717,41 @@
 
         // 八皇后初始化
         function initQueens() {
-            const board = document.getElementById('chess-board');
-            board.innerHTML = '';
-
-            // 创建棋盘
-            for (let i = 0; i < 8; i++) {
-                for (let j = 0; j < 8; j++) {
-                    const cell = document.createElement('div');
-                    cell.className = `chess-cell ${(i + j) % 2 === 0 ? 'white' : 'black'}`;
-                    cell.dataset.row = i;
-                    cell.dataset.col = j;
-                    board.appendChild(cell);
-                }
-            }
-
-            // 重置状态
-            queensBoard = Array(8).fill().map(() => Array(8).fill(0));
-            queensSolution = [];
-            currentRow = 0;
-            attemptCount = 0;
-            backtrackCount = 0;
-
+            createChessBoard();
+            resetQueensState();
             updateQueensStats();
-            updateQueensStatus('准备开始：点击"开始求解"按钮');
+            
+            // 初始状态：需要用户选择模式
+            setInteractionMode(null);
+            updateQueensStatus('请选择交互模式开始');
 
             // 绑定控制按钮事件
             document.getElementById('start-queens').onclick = startQueens;
             document.getElementById('step-queens').onclick = stepQueens;
             document.getElementById('pause-queens').onclick = pauseQueens;
             document.getElementById('reset-queens').onclick = resetQueens;
+            document.getElementById('find-all-solutions').onclick = findAllSolutions;
+            document.getElementById('manual-mode').onclick = () => setInteractionMode(true);
+            document.getElementById('auto-mode').onclick = () => setInteractionMode(false);
+
+            // 棋盘大小控制
+            document.getElementById('board-size-input').oninput = function () {
+                let size = parseInt(this.value);
+                if (size < 4) {
+                    size = 4;
+                    this.value = 4;
+                } else if (size > 12) {
+                    size = 12;
+                    this.value = 12;
+                }
+                
+                boardSize = size;
+                document.getElementById('board-size-display').textContent = boardSize;
+                document.getElementById('current-board-size').textContent = boardSize;
+                createChessBoard();
+                resetQueensState();
+                updateQueensStats();
+            };
 
             // 速度控制
             document.getElementById('queens-speed').oninput = function () {
@@ -566,25 +762,200 @@
             };
         }
 
-        // 开始八皇后算法
+        // 创建棋盘
+        function createChessBoard() {
+            const board = document.getElementById('chess-board');
+            board.innerHTML = '';
+            board.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
+
+            // 动态调整格子大小
+            const cellSize = Math.min(50, Math.floor(400 / boardSize));
+            
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = `chess-cell ${(i + j) % 2 === 0 ? 'white' : 'black'}`;
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.style.width = cellSize + 'px';
+                    cell.style.height = cellSize + 'px';
+                    cell.style.fontSize = Math.max(12, cellSize * 0.6) + 'px';
+                    
+                    // 添加点击事件用于手动模式
+                    cell.addEventListener('click', () => handleCellClick(i, j));
+                    cell.addEventListener('mouseenter', () => handleCellHover(i, j));
+                    cell.addEventListener('mouseleave', () => handleCellLeave(i, j));
+                    
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        // 重置皇后状态
+        function resetQueensState() {
+            queensBoard = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
+            queensSolution = Array(boardSize).fill(-1);
+            manualQueens = [];
+            currentRow = 0;
+            attemptCount = 0;
+            backtrackCount = 0;
+            solutionsFound = 0;
+            allSolutions = [];
+            findingAllSolutions = false;
+            resetQueensBoard();
+        }
+
+        // 设置交互模式
+        function setInteractionMode(manual) {
+            isManualMode = manual;
+            
+            // 更新按钮样式
+            document.getElementById('manual-mode').classList.toggle('active', manual === true);
+            document.getElementById('auto-mode').classList.toggle('active', manual === false);
+            
+            // 更新按钮状态
+            if (manual === true) {
+                // 手动模式
+                document.getElementById('start-queens').disabled = true;
+                document.getElementById('step-queens').disabled = true;
+                document.getElementById('find-all-solutions').disabled = true;
+                updateQueensStatus('手动模式：点击棋盘放置皇后');
+            } else if (manual === false) {
+                // 自动模式
+                document.getElementById('start-queens').disabled = false;
+                document.getElementById('step-queens').disabled = false;
+                document.getElementById('find-all-solutions').disabled = false;
+                updateQueensStatus('自动模式：点击按钮开始算法求解');
+                clearManualHighlights();
+            } else {
+                // 未选择模式
+                document.getElementById('start-queens').disabled = true;
+                document.getElementById('step-queens').disabled = true;
+                document.getElementById('find-all-solutions').disabled = true;
+                updateQueensStatus('请选择交互模式开始');
+            }
+        }
+
+        // 处理格子点击
+        function handleCellClick(row, col) {
+            if (isManualMode !== true || isAnimating) return;
+            
+            const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            
+            if (cell.classList.contains('queen')) {
+                // 移除皇后
+                removeQueen(row, col);
+                queensBoard[row][col] = 0;
+                manualQueens = manualQueens.filter(q => !(q.row === row && q.col === col));
+                updateQueensStatus(`移除皇后：第${row + 1}行第${col + 1}列`);
+            } else {
+                // 检查是否可以放置皇后
+                if (isManualPositionSafe(row, col)) {
+                    placeQueen(row, col);
+                    queensBoard[row][col] = 1;
+                    manualQueens.push({row, col});
+                    updateQueensStatus(`放置皇后：第${row + 1}行第${col + 1}列`);
+                    
+                    // 检查是否完成
+                    if (manualQueens.length === boardSize) {
+                        updateQueensStatus('🎉 恭喜！您已成功手动解决N皇后问题！');
+                        solutionsFound = 1;
+                        updateQueensStats();
+                    }
+                } else {
+                    // 显示冲突
+                    cell.classList.add('invalid-position');
+                    setTimeout(() => {
+                        cell.classList.remove('invalid-position');
+                    }, 500);
+                    updateQueensStatus(`冲突位置：第${row + 1}行第${col + 1}列不能放置皇后`);
+                }
+            }
+        }
+
+        // 处理格子悬停
+        function handleCellHover(row, col) {
+            if (isManualMode !== true || isAnimating) return;
+            
+            const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            if (!cell.classList.contains('queen') && isManualPositionSafe(row, col)) {
+                cell.classList.add('manual-highlight');
+            }
+        }
+
+        // 处理格子离开
+        function handleCellLeave(row, col) {
+            if (isManualMode !== true) return;
+            
+            const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            cell.classList.remove('manual-highlight');
+        }
+
+        // 检查手动模式下位置是否安全
+        function isManualPositionSafe(row, col) {
+            for (let queen of manualQueens) {
+                if (queen.row === row || queen.col === col ||
+                    Math.abs(queen.row - row) === Math.abs(queen.col - col)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // 清除手动模式高亮
+        function clearManualHighlights() {
+            document.querySelectorAll('.chess-cell').forEach(cell => {
+                cell.classList.remove('manual-highlight', 'invalid-position');
+            });
+        }
+
+        // 查找所有解决方案
+        function findAllSolutions() {
+            if (isAnimating || isManualMode === true || isManualMode === null) return;
+
+            isAnimating = true;
+            findingAllSolutions = true;
+            startTime = Date.now();
+
+            document.getElementById('start-queens').disabled = true;
+            document.getElementById('step-queens').disabled = true;
+            document.getElementById('find-all-solutions').disabled = true;
+            document.getElementById('pause-queens').disabled = false;
+            document.getElementById('pause-queens').textContent = '暂停';
+
+            resetQueensBoard();
+            currentRow = 0;
+            attemptCount = 0;
+            backtrackCount = 0;
+            solutionsFound = 0;
+            allSolutions = [];
+
+            updateQueensStatus('正在查找所有解决方案...');
+            solveAllQueens(0);
+        }
         function startQueens() {
-            if (isAnimating) return;
+            if (isAnimating || isManualMode === true || isManualMode === null) return;
 
             isAnimating = true;
             stepMode = false;
             isPaused = false;
+            findingAllSolutions = false;
+            startTime = Date.now();
 
             document.getElementById('start-queens').disabled = true;
             document.getElementById('step-queens').disabled = true;
             document.getElementById('pause-queens').disabled = false;
+            document.getElementById('pause-queens').textContent = '暂停';
 
             resetQueensBoard();
+            resetQueensState();
+            updateQueensStatus('开始求解...');
             solveQueens(0);
         }
 
         // 单步执行八皇后
         function stepQueens() {
-            if (isAnimating) return;
+            if (isAnimating || isManualMode === true || isManualMode === null) return;
 
             stepMode = true;
             isAnimating = true;
@@ -592,8 +963,10 @@
             document.getElementById('start-queens').disabled = true;
             document.getElementById('step-queens').disabled = true;
 
-            if (currentRow === 0 && queensSolution.length === 0) {
+            if (currentRow === 0 && solutionsFound === 0) {
                 resetQueensBoard();
+                resetQueensState();
+                startTime = Date.now();
             }
 
             solveQueensStep();
@@ -605,7 +978,11 @@
             document.getElementById('pause-queens').textContent = isPaused ? '继续' : '暂停';
 
             if (!isPaused && isAnimating) {
-                solveQueens(currentRow);
+                if (findingAllSolutions) {
+                    solveAllQueens(currentRow);
+                } else {
+                    solveQueens(currentRow);
+                }
             }
         }
 
@@ -616,42 +993,44 @@
             isAnimating = false;
             stepMode = false;
             isPaused = false;
+            findingAllSolutions = false;
 
-            document.getElementById('start-queens').disabled = false;
-            document.getElementById('step-queens').disabled = false;
+            document.getElementById('start-queens').disabled = (isManualMode === true);
+            document.getElementById('step-queens').disabled = (isManualMode === true);
+            document.getElementById('find-all-solutions').disabled = (isManualMode === true);
             document.getElementById('pause-queens').disabled = true;
             document.getElementById('pause-queens').textContent = '暂停';
 
-            resetQueensBoard();
-            currentRow = 0;
-            attemptCount = 0;
-            backtrackCount = 0;
-            queensSolution = [];
-
+            resetQueensState();
             updateQueensStats();
-            updateQueensStatus('已重置：点击"开始求解"或"单步执行"');
+            
+            // 重置到需要选择模式的状态
+            setInteractionMode(null);
+            updateQueensStatus('请选择交互模式开始');
         }
 
         // 重置棋盘显示
         function resetQueensBoard() {
             const cells = document.querySelectorAll('.chess-cell');
             cells.forEach(cell => {
-                cell.classList.remove('queen', 'attacked', 'trying');
+                cell.classList.remove('queen', 'attacked', 'trying', 'manual-highlight', 'invalid-position');
                 cell.textContent = '';
                 const row = parseInt(cell.dataset.row);
                 const col = parseInt(cell.dataset.col);
                 cell.className = `chess-cell ${(row + col) % 2 === 0 ? 'white' : 'black'}`;
             });
 
-            queensBoard = Array(8).fill().map(() => Array(8).fill(0));
+            queensBoard = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
         }
 
-        // 八皇后求解算法
+        // 修复的八皇后求解算法
         async function solveQueens(row) {
-            if (isPaused) return;
+            if (isPaused) return false;
 
-            if (row === 8) {
-                updateQueensStatus('🎉 找到解决方案！所有8个皇后都已正确放置！');
+            if (row === boardSize) {
+                solutionsFound++;
+                updateQueensStats();
+                updateQueensStatus('🎉 找到解决方案！');
                 finishQueensAnimation();
                 return true;
             }
@@ -659,7 +1038,9 @@
             currentRow = row;
             updateQueensStats();
 
-            for (let col = 0; col < 8; col++) {
+            for (let col = 0; col < boardSize; col++) {
+                if (isPaused) return false;
+                
                 attemptCount++;
                 updateQueensStats();
 
@@ -668,71 +1049,123 @@
                     queensSolution[row] = col;
                     queensBoard[row][col] = 1;
 
-                    highlightCell(row, col, 'trying');
-                    updateQueensStatus(`第${row + 1}行：尝试在列${col + 1}放置皇后...`);
+                    if (!stepMode) {
+                        highlightCell(row, col, 'trying');
+                        updateQueensStatus(`第${row + 1}行：尝试在列${col + 1}放置皇后...`);
+                        await new Promise(resolve => setTimeout(resolve, animationSpeed / 2));
+                    }
 
-                    queensAnimationId = setTimeout(() => {
-                        placeQueen(row, col);
-
-                        queensAnimationId = setTimeout(() => {
-                            if (solveQueens(row + 1)) {
-                                return true;
-                            }
-
-                            // 回溯
-                            backtrackCount++;
-                            updateQueensStats();
-                            updateQueensStatus(`第${row + 1}行：回溯，移除列${col + 1}的皇后`);
-
-                            removeQueen(row, col);
-                            queensBoard[row][col] = 0;
-                            queensSolution[row] = -1;
-                        }, stepMode ? 0 : animationSpeed);
-                    }, stepMode ? 0 : animationSpeed / 2);
-
+                    placeQueen(row, col);
+                    
                     if (stepMode) {
                         document.getElementById('step-queens').disabled = false;
                         isAnimating = false;
                         return false;
                     }
 
-                    return false;
+                    await new Promise(resolve => setTimeout(resolve, animationSpeed / 2));
+
+                    // 递归求解下一行
+                    if (await solveQueens(row + 1)) {
+                        return true;
+                    }
+
+                    // 回溯
+                    backtrackCount++;
+                    updateQueensStats();
+                    updateQueensStatus(`第${row + 1}行：回溯，移除列${col + 1}的皇后`);
+
+                    removeQueen(row, col);
+                    queensBoard[row][col] = 0;
+                    queensSolution[row] = -1;
+
+                    if (!stepMode) {
+                        await new Promise(resolve => setTimeout(resolve, animationSpeed / 2));
+                    }
                 } else {
                     // 显示冲突
-                    highlightAttacked(row, col);
-                    updateQueensStatus(`第${row + 1}行：列${col + 1}位置冲突，尝试下一个位置`);
-
-                    if (stepMode) {
-                        document.getElementById('step-queens').disabled = false;
-                        isAnimating = false;
-                        return false;
+                    if (!stepMode) {
+                        highlightAttacked(row, col);
+                        updateQueensStatus(`第${row + 1}行：列${col + 1}位置冲突，尝试下一个位置`);
+                        await new Promise(resolve => setTimeout(resolve, animationSpeed / 3));
                     }
-
-                    await new Promise(resolve => {
-                        queensAnimationId = setTimeout(resolve, animationSpeed / 3);
-                    });
                 }
             }
 
-            if (row > 0) {
-                updateQueensStatus(`第${row + 1}行：无可行解，回溯到第${row}行`);
+            // 当前行没有可行解
+            if (row === 0) {
+                updateQueensStatus('无解：该棋盘大小下无法解决N皇后问题');
+                finishQueensAnimation();
             }
 
             return false;
         }
 
+        // 查找所有解的算法
+        async function solveAllQueens(row) {
+            if (isPaused) return;
+
+            if (row === boardSize) {
+                // 找到一个解
+                solutionsFound++;
+                allSolutions.push([...queensSolution]);
+                updateQueensStats();
+                updateQueensStatus(`找到第${solutionsFound}个解决方案...`);
+                
+                // 继续寻找其他解（回溯）
+                return;
+            }
+
+            currentRow = row;
+            updateQueensStats();
+
+            for (let col = 0; col < boardSize; col++) {
+                if (isPaused) return;
+                
+                attemptCount++;
+                updateQueensStats();
+
+                if (isSafe(row, col)) {
+                    // 放置皇后
+                    queensSolution[row] = col;
+                    queensBoard[row][col] = 1;
+                    placeQueen(row, col);
+
+                    await new Promise(resolve => setTimeout(resolve, 30));
+
+                    // 递归求解下一行
+                    await solveAllQueens(row + 1);
+                    
+                    // 回溯
+                    backtrackCount++;
+                    updateQueensStats();
+                    removeQueen(row, col);
+                    queensBoard[row][col] = 0;
+                    queensSolution[row] = -1;
+                }
+            }
+
+            // 如果回到第一行且完成所有列的尝试，表示搜索完成
+            if (row === 0) {
+                updateQueensStatus(`🎉 搜索完成！共找到${solutionsFound}个解决方案`);
+                finishQueensAnimation();
+            }
+        }
+
         // 单步执行逻辑
         function solveQueensStep() {
-            // 实现单步逻辑（简化版本）
-            if (currentRow >= 8) {
+            if (currentRow >= boardSize) {
                 updateQueensStatus('🎉 找到解决方案！');
                 finishQueensAnimation();
                 return;
             }
 
-            // 为演示目的，这里实现一个简化的单步逻辑
+            // 简化的单步逻辑
             let placed = false;
-            for (let col = 0; col < 8; col++) {
+            for (let col = 0; col < boardSize; col++) {
+                attemptCount++;
+                updateQueensStats();
+                
                 if (isSafe(currentRow, col)) {
                     queensSolution[currentRow] = col;
                     queensBoard[currentRow][col] = 1;
@@ -745,11 +1178,21 @@
             }
 
             if (!placed && currentRow > 0) {
+                // 需要回溯
                 currentRow--;
+                backtrackCount++;
+                updateQueensStats();
                 const col = queensSolution[currentRow];
-                removeQueen(currentRow, col);
-                queensBoard[currentRow][col] = 0;
+                if (col >= 0) {
+                    removeQueen(currentRow, col);
+                    queensBoard[currentRow][col] = 0;
+                    queensSolution[currentRow] = -1;
+                }
                 updateQueensStatus(`回溯到第${currentRow + 1}行`);
+            } else if (!placed) {
+                updateQueensStatus('无解：该棋盘大小下无法解决N皇后问题');
+                finishQueensAnimation();
+                return;
             }
 
             updateQueensStats();
@@ -770,7 +1213,7 @@
             }
 
             // 检查右对角线
-            for (let i = row - 1, j = col + 1; i >= 0 && j < 8; i--, j++) {
+            for (let i = row - 1, j = col + 1; i >= 0 && j < boardSize; i--, j++) {
                 if (queensBoard[i][j] === 1) return false;
             }
 
@@ -823,9 +1266,17 @@
 
         // 更新八皇后统计
         function updateQueensStats() {
+            document.getElementById('current-board-size').textContent = boardSize;
             document.getElementById('attempt-count').textContent = attemptCount;
             document.getElementById('backtrack-count').textContent = backtrackCount;
             document.getElementById('current-row').textContent = currentRow + 1;
+            document.getElementById('solutions-found').textContent = solutionsFound;
+            
+            // 更新执行时间
+            if (startTime > 0) {
+                const elapsed = Date.now() - startTime;
+                document.getElementById('execution-time').textContent = elapsed;
+            }
         }
 
         // 图着色初始化
@@ -928,8 +1379,8 @@
                 circle.setAttribute('cx', node.x);
                 circle.setAttribute('cy', node.y);
                 circle.setAttribute('r', 25);
-                circle.setAttribute('fill', '#fff');
-                circle.setAttribute('stroke', '#333');
+                circle.setAttribute('fill', '#f8f5f2');
+                circle.setAttribute('stroke', '#8b7d6b');
                 circle.setAttribute('stroke-width', 2);
 
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -1010,8 +1461,8 @@
             // 重置节点颜色
             graph.nodes.forEach((node, index) => {
                 const nodeElement = document.querySelector(`[data-node="${index}"] circle`);
-                nodeElement.setAttribute('fill', '#fff');
-                nodeElement.setAttribute('stroke', '#333');
+                nodeElement.setAttribute('fill', '#f8f5f2');
+                nodeElement.setAttribute('stroke', '#8b7d6b');
                 nodeElement.setAttribute('stroke-width', 2);
             });
 
@@ -1154,10 +1605,10 @@
         function highlightNode(nodeIndex, type) {
             const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
             if (type === 'trying') {
-                nodeElement.setAttribute('stroke', '#4ecdc4');
+                nodeElement.setAttribute('stroke', '#c8b8a8');
                 nodeElement.setAttribute('stroke-width', 4);
             } else if (type === 'conflict') {
-                nodeElement.setAttribute('stroke', '#ff6b6b');
+                nodeElement.setAttribute('stroke', '#d4a574');
                 nodeElement.setAttribute('stroke-width', 4);
             }
         }
@@ -1173,15 +1624,15 @@
         // 重置节点颜色
         function resetNodeColor(nodeIndex) {
             const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
-            nodeElement.setAttribute('fill', '#fff');
-            nodeElement.setAttribute('stroke', '#333');
+            nodeElement.setAttribute('fill', '#f8f5f2');
+            nodeElement.setAttribute('stroke', '#8b7d6b');
             nodeElement.setAttribute('stroke-width', 2);
         }
 
         // 重置节点高亮
         function resetNodeHighlight(nodeIndex) {
             const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
-            nodeElement.setAttribute('stroke', '#333');
+            nodeElement.setAttribute('stroke', '#8b7d6b');
             nodeElement.setAttribute('stroke-width', 2);
         }
 
