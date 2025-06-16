@@ -220,24 +220,11 @@
             margin: 20px 0;
         }
 
-        .graph-svg {
+        .graph-canvas {
             border: 2px solid #d4c5b9;
             border-radius: 10px;
             background: #f8f5f2;
-        }
-
-        .graph-node {
             cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .graph-node:hover {
-            transform: scale(1.1);
-        }
-
-        .graph-edge {
-            stroke: #8b7d6b;
-            stroke-width: 2;
         }
 
         .control-btn {
@@ -339,6 +326,15 @@
             border-radius: 8px;
             margin: 10px 0;
             font-size: 0.9em;
+        }
+
+        .statistics hr {
+            margin: 8px 0;
+            border: 1px solid #d4c5b9;
+            border-top: 1px solid #d4c5b9;
+            border-bottom: none;
+            border-left: none;
+            border-right: none;
         }
 
         .menu-description {
@@ -457,6 +453,99 @@
             margin: 5px 0;
             font-size: 0.9em;
             text-align: center;
+        }
+
+        .graph-complexity-selector {
+            margin: 15px 0;
+        }
+
+        .complexity-select {
+            width: 100%;
+            padding: 5px;
+            border: 2px solid #d4c5b9;
+            border-radius: 5px;
+            background: #f8f5f2;
+            color: #5c5448;
+            font-size: 1em;
+            margin-top: 5px;
+        }
+
+        .complexity-select:focus {
+            outline: none;
+            border-color: #c8b8a8;
+        }
+
+        .manual-color-selector {
+            margin: 15px 0;
+        }
+
+        .manual-color-selector.hidden {
+            display: none;
+        }
+
+        .color-selector-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border: 3px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .color-btn.active {
+            border-color: #5c5448;
+            box-shadow: 0 0 10px rgba(92, 84, 72, 0.5);
+        }
+
+        .color-btn-1 { background: #d4a574; }
+        .color-btn-2 { background: #a4b5a0; }
+        .color-btn-3 { background: #9bb5c7; }
+        .color-btn-4 { background: #d4c5a0; }
+
+        .graph-edge.conflict {
+            stroke: #ff6b6b;
+            stroke-width: 4;
+            animation: conflictPulse 1s ease-in-out infinite;
+        }
+
+        .graph-node.trying {
+            animation: nodeTrying 1s ease-in-out infinite alternate;
+        }
+
+        .graph-node.conflict {
+            animation: nodeConflict 0.5s ease-in-out;
+        }
+
+        @keyframes conflictPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes nodeTrying {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        @keyframes nodeConflict {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(0.9); }
+            75% { transform: scale(1.1); }
         }
 
         @media (max-width: 768px) {
@@ -581,7 +670,7 @@
             <div class="main-content">
                 <div class="visualization-area">
                     <div class="graph-container">
-                        <svg id="graph-svg" class="graph-svg" width="400" height="300"></svg>
+                        <canvas id="graph-canvas" class="graph-canvas" width="400" height="300"></canvas>
                     </div>
                     <div class="color-legend">
                         <div class="color-item">
@@ -607,9 +696,18 @@
                 </div>
                 <div class="control-panel">
                     <h3>控制面板</h3>
+                    
+                    <div class="graph-complexity-selector">
+                        <label>图复杂度：</label>
+                        <select id="graph-complexity" class="complexity-select">
+                            <option value="simple">简单 (4节点)</option>
+                            <option value="medium" selected>中等 (6节点)</option>
+                            <option value="complex">复杂 (8节点)</option>
+                        </select>
+                    </div>
+
                     <button id="start-coloring" class="control-btn">开始着色</button>
                     <button id="step-coloring" class="control-btn" disabled>单步执行</button>
-                    <button id="pause-coloring" class="control-btn" disabled>暂停/继续</button>
                     <button id="reset-coloring" class="control-btn">重置</button>
                     <button id="generate-graph" class="control-btn">生成新图</button>
 
@@ -618,21 +716,48 @@
                         <input type="range" id="coloring-speed" class="speed-slider" min="1" max="10" value="5">
                     </div>
 
+                    <div class="interaction-mode">
+                        <label>交互模式：</label>
+                        <div class="mode-buttons">
+                            <button id="auto-coloring-mode" class="mode-btn">自动求解</button>
+                            <button id="manual-coloring-mode" class="mode-btn">手动着色</button>
+                        </div>
+                    </div>
+
+                    <div class="manual-color-selector hidden" id="manual-color-panel">
+                        <label>选择颜色：</label>
+                        <div class="color-selector-buttons">
+                            <button class="color-btn color-btn-1 active" data-color="0">1</button>
+                            <button class="color-btn color-btn-2" data-color="1">2</button>
+                            <button class="color-btn color-btn-3" data-color="2">3</button>
+                            <button class="color-btn color-btn-4" data-color="3">4</button>
+                        </div>
+                    </div>
+
                     <div class="statistics" id="coloring-stats">
+                        <div>图复杂度: <span id="current-complexity">中等</span></div>
+                        <div>节点数: <span id="node-count">6</span></div>
+                        <div>边数: <span id="edge-count">8</span></div>
                         <div>尝试次数: <span id="coloring-attempt-count">0</span></div>
                         <div>回溯次数: <span id="coloring-backtrack-count">0</span></div>
                         <div>当前节点: <span id="current-node">-</span></div>
-                        <div>使用颜色数: <span id="colors-used">0</span></div>
+                        <div>当前颜色数: <span id="colors-used">0</span></div>
+                        <hr>
+                        <div>尝试颜色数: <span id="current-max-colors">1</span></div>
+                        <div>最优颜色数: <span id="best-color-count">-</span></div>
+                        <div>找到解决方案: <span id="solution-count">0</span></div>
                     </div>
                 </div>
                 <div class="algorithm-info">
                     <h3>算法详解</h3>
                     <div class="step-info">
                         <h4>问题描述</h4>
-                        <p>图着色问题要求给图的每个顶点分配颜色，使得相邻顶点颜色不同，并尽可能使用最少的颜色数。这是一个经典的NP完全问题。</p>
+                        <p>图着色问题要求给图的每个顶点分配颜色，使得相邻顶点颜色不同，并找到使用最少颜色数的着色方案。这是一个经典的NP完全优化问题。</p>
                         
                         <h4>算法思路</h4>
-                        <p>1. <strong>顺序着色：</strong>按照节点编号顺序依次为每个节点着色</p>
+                        <p>1. <strong>最优解搜索：</strong>从1种颜色开始，逐步增加颜色数直到找到可行解</p>
+                        <p>2. <strong>回溯搜索：</strong>在每个颜色数限制下使用回溯算法尝试着色</p>
+                        <p>3. <strong>剪枝优化：</strong>一旦找到可行解，即为最优解（最少颜色数）</p>
                         <p>2. <strong>颜色检查：</strong>对于每个节点，尝试可用的颜色，检查是否与相邻节点冲突</p>
                         <p>3. <strong>回溯搜索：</strong>如果无法为当前节点找到合适颜色，回溯到前一个节点重新选择</p>
                         <p>4. <strong>最优化：</strong>尝试使用最少的颜色完成整个图的着色</p>
@@ -683,6 +808,14 @@
         let currentNodeIndex = 0;
         let coloringAnimationId = null;
         let availableColors = ['#d4a574', '#a4b5a0', '#9bb5c7', '#d4c5a0'];
+        let isManualColoringMode = false;
+        let manualColorIndex = 0;
+        
+        // 最优解相关变量
+        let bestSolution = null;  // 最优着色方案
+        let bestColorCount = Infinity;  // 最少颜色数
+        let currentMaxColors = 1;  // 当前尝试的最大颜色数
+        let solutionCount = 0;  // 找到的解决方案总数
 
         // 显示算法页面
         function showAlgorithm(algorithm) {
@@ -1235,14 +1368,18 @@
             currentNodeIndex = 0;
 
             updateColoringStats();
-            updateColoringStatus('准备开始：点击"开始着色"按钮');
+            updateColoringStatus('准备开始：点击"开始着色"寻找最优方案');
 
             // 绑定控制按钮事件
             document.getElementById('start-coloring').onclick = startColoring;
             document.getElementById('step-coloring').onclick = stepColoring;
-            document.getElementById('pause-coloring').onclick = pauseColoring;
             document.getElementById('reset-coloring').onclick = resetColoring;
             document.getElementById('generate-graph').onclick = generateNewGraph;
+            document.getElementById('manual-coloring-mode').onclick = () => setColoringInteractionMode(true);
+            document.getElementById('auto-coloring-mode').onclick = () => setColoringInteractionMode(false);
+
+            // 默认进入自动模式
+            setColoringInteractionMode(false);
 
             // 速度控制
             document.getElementById('coloring-speed').oninput = function () {
@@ -1251,13 +1388,33 @@
                 const labels = ['很慢', '慢', '较慢', '中慢', '中等', '中快', '较快', '快', '很快', '极快'];
                 document.getElementById('coloring-speed-display').textContent = labels[speed - 1];
             };
+
+            // 图复杂度控制
+            document.getElementById('graph-complexity').onchange = function () {
+                generateRandomGraph();
+                resetColoring();
+            };
         }
 
-        // 生成随机图
+        // 生成随机图（专门设计用于回溯演示）
         function generateRandomGraph() {
-            const nodeCount = 6;
-            const svg = document.getElementById('graph-svg');
-            svg.innerHTML = '';
+            const complexity = document.getElementById('graph-complexity')?.value || 'medium';
+            let nodeCount;
+            
+            // 根据复杂度设置参数，重点是创建容易回溯的图
+            switch(complexity) {
+                case 'simple':
+                    nodeCount = 4;
+                    break;
+                case 'medium':
+                    nodeCount = 5;
+                    break;
+                case 'complex':
+                    nodeCount = 6;
+                    break;
+                default:
+                    nodeCount = 5;
+            }
 
             // 初始化图结构
             graph.nodes = [];
@@ -1265,97 +1422,540 @@
             graph.adjacencyList = {};
 
             // 生成节点位置
-            const centerX = 200;
-            const centerY = 150;
-            const radius = 100;
-
+            generateNodePositions(nodeCount);
+            
+            // 初始化邻接表
             for (let i = 0; i < nodeCount; i++) {
-                const angle = (i / nodeCount) * 2 * Math.PI;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-
-                graph.nodes.push({ id: i, x: x, y: y });
                 graph.adjacencyList[i] = [];
             }
 
-            // 生成边（确保图连通且有足够的约束）
-            const edges = [
-                [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], // 环形基础结构
-                [0, 3], [1, 4], [2, 5] // 添加一些交叉边增加复杂度
-            ];
-
-            edges.forEach(([from, to]) => {
-                if (!graph.adjacencyList[from].includes(to)) {
-                    graph.edges.push({ from, to });
-                    graph.adjacencyList[from].push(to);
-                    graph.adjacencyList[to].push(from);
-                }
-            });
+            // 生成专门设计的回溯图结构
+            generateBacktrackingGraph(nodeCount);
 
             drawGraph();
         }
 
-        // 绘制图
-        function drawGraph() {
-            const svg = document.getElementById('graph-svg');
-            svg.innerHTML = '';
+        // 生成随机的回溯图结构（每次生成不同的图）
+        function generateBacktrackingGraph(nodeCount) {
+            // 随机选择一种图生成策略
+            const strategies = getGraphStrategies(nodeCount);
+            const strategy = strategies[Math.floor(Math.random() * strategies.length)];
+            strategy();
+        }
 
+        // 获取不同复杂度下的图生成策略
+        function getGraphStrategies(nodeCount) {
+            const strategies = [];
+
+            if (nodeCount === 4) {
+                // 策略1：完全图（K4）- 需要4种颜色
+                strategies.push(() => {
+                    for (let i = 0; i < 4; i++) {
+                        for (let j = i + 1; j < 4; j++) {
+                            addEdge(i, j);
+                        }
+                    }
+                });
+
+                // 策略2：轮图（wheel graph）- 中心节点连接所有外围节点
+                strategies.push(() => {
+                    // 外围三角形
+                    addEdge(0, 1);
+                    addEdge(1, 2);
+                    addEdge(2, 0);
+                    // 中心节点3连接所有
+                    addEdge(3, 0);
+                    addEdge(3, 1);
+                    addEdge(3, 2);
+                });
+
+                // 策略3：路径+额外边
+                strategies.push(() => {
+                    addEdge(0, 1);
+                    addEdge(1, 2);
+                    addEdge(2, 3);
+                    addEdge(0, 3); // 形成环
+                    if (Math.random() > 0.5) addEdge(0, 2); // 随机添加对角线
+                });
+
+            } else if (nodeCount === 5) {
+                // 策略1：五角星形
+                strategies.push(() => {
+                    for (let i = 0; i < 5; i++) {
+                        addEdge(i, (i + 2) % 5); // 每个节点连接距离为2的节点
+                    }
+                });
+
+                // 策略2：轮图（中心+外围）
+                strategies.push(() => {
+                    // 外围四边形
+                    for (let i = 0; i < 4; i++) {
+                        addEdge(i, (i + 1) % 4);
+                    }
+                    // 中心节点连接所有外围
+                    for (let i = 0; i < 4; i++) {
+                        addEdge(4, i);
+                    }
+                });
+
+                // 策略3：两个三角形共享一个节点
+                strategies.push(() => {
+                    // 第一个三角形：0,1,2
+                    addEdge(0, 1);
+                    addEdge(1, 2);
+                    addEdge(2, 0);
+                    
+                    // 第二个三角形：2,3,4 (共享节点2)
+                    addEdge(2, 3);
+                    addEdge(3, 4);
+                    addEdge(4, 2);
+                    
+                    // 随机添加额外连接
+                    if (Math.random() > 0.3) addEdge(0, 3);
+                    if (Math.random() > 0.3) addEdge(1, 4);
+                });
+
+                // 策略4：Petersen图的子图
+                strategies.push(() => {
+                    addEdge(0, 1);
+                    addEdge(1, 2);
+                    addEdge(2, 3);
+                    addEdge(3, 4);
+                    addEdge(4, 0); // 外围环
+                    addEdge(0, 2); // 跳跃连接
+                    addEdge(1, 4);
+                });
+
+            } else if (nodeCount === 6) {
+                // 策略1：两个完全连接的三角形
+                strategies.push(() => {
+                    // 第一个三角形
+                    addEdge(0, 1);
+                    addEdge(1, 2);
+                    addEdge(2, 0);
+                    
+                    // 第二个三角形
+                    addEdge(3, 4);
+                    addEdge(4, 5);
+                    addEdge(5, 3);
+                    
+                    // 随机连接两个三角形
+                    const connections = [
+                        [0, 3], [0, 4], [0, 5],
+                        [1, 3], [1, 4], [1, 5],
+                        [2, 3], [2, 4], [2, 5]
+                    ];
+                    const numConnections = 2 + Math.floor(Math.random() * 4); // 2-5个连接
+                    for (let i = 0; i < numConnections; i++) {
+                        const connection = connections[Math.floor(Math.random() * connections.length)];
+                        addEdge(connection[0], connection[1]);
+                        connections.splice(connections.indexOf(connection), 1);
+                    }
+                });
+
+                // 策略2：轮图变体
+                strategies.push(() => {
+                    // 外围五边形
+                    for (let i = 0; i < 5; i++) {
+                        addEdge(i, (i + 1) % 5);
+                    }
+                    // 中心节点
+                    for (let i = 0; i < 5; i++) {
+                        if (Math.random() > 0.2) { // 不是所有外围节点都连接中心
+                            addEdge(5, i);
+                        }
+                    }
+                    // 确保至少有3个连接到中心
+                    let centerConnections = 0;
+                    for (let i = 0; i < 5; i++) {
+                        if (graph.adjacencyList[5].includes(i)) centerConnections++;
+                    }
+                    while (centerConnections < 3) {
+                        const randomNode = Math.floor(Math.random() * 5);
+                        if (!graph.adjacencyList[5].includes(randomNode)) {
+                            addEdge(5, randomNode);
+                            centerConnections++;
+                        }
+                    }
+                });
+
+                // 策略3：双层结构
+                strategies.push(() => {
+                    // 下层三角形：0,1,2
+                    addEdge(0, 1);
+                    addEdge(1, 2);
+                    addEdge(2, 0);
+                    
+                    // 上层三角形：3,4,5
+                    addEdge(3, 4);
+                    addEdge(4, 5);
+                    addEdge(5, 3);
+                    
+                    // 垂直连接（每个上层节点连接1-2个下层节点）
+                    for (let upper = 3; upper <= 5; upper++) {
+                        const connections = Math.floor(Math.random() * 2) + 1; // 1或2个连接
+                        const availableLower = [0, 1, 2];
+                        for (let c = 0; c < connections && availableLower.length > 0; c++) {
+                            const lowerIndex = Math.floor(Math.random() * availableLower.length);
+                            const lower = availableLower[lowerIndex];
+                            addEdge(upper, lower);
+                            availableLower.splice(lowerIndex, 1);
+                        }
+                    }
+                });
+
+                // 策略4：接近完全图的随机子图
+                strategies.push(() => {
+                    const allPossibleEdges = [];
+                    for (let i = 0; i < 6; i++) {
+                        for (let j = i + 1; j < 6; j++) {
+                            allPossibleEdges.push([i, j]);
+                        }
+                    }
+                    
+                    // 随机选择60%-85%的边
+                    const edgeCount = Math.floor(allPossibleEdges.length * (0.6 + Math.random() * 0.25));
+                    for (let i = 0; i < edgeCount; i++) {
+                        const edgeIndex = Math.floor(Math.random() * allPossibleEdges.length);
+                        const edge = allPossibleEdges[edgeIndex];
+                        addEdge(edge[0], edge[1]);
+                        allPossibleEdges.splice(edgeIndex, 1);
+                    }
+                });
+            }
+
+            return strategies;
+        }
+
+        // 生成节点位置
+        function generateNodePositions(nodeCount) {
+            const centerX = 200;
+            const centerY = 150;
+            const minRadius = 80;
+            const maxRadius = 120;
+
+            if (nodeCount <= 6) {
+                // 随机选择布局方式
+                const layoutType = Math.random();
+                
+                if (layoutType < 0.6) {
+                    // 圆形布局（60%概率）
+                    const baseAngle = Math.random() * 2 * Math.PI; // 随机起始角度
+                    for (let i = 0; i < nodeCount; i++) {
+                        const angle = baseAngle + (i / nodeCount) * 2 * Math.PI + (Math.random() * 0.4 - 0.2);
+                        const radius = minRadius + Math.random() * (maxRadius - minRadius);
+                        const x = centerX + radius * Math.cos(angle);
+                        const y = centerY + radius * Math.sin(angle);
+                        graph.nodes.push({ id: i, x: x, y: y });
+                    }
+                } else if (layoutType < 0.8) {
+                    // 椭圆布局（20%概率）
+                    const radiusX = minRadius + Math.random() * 40;
+                    const radiusY = minRadius * 0.6 + Math.random() * 30;
+                    const baseAngle = Math.random() * 2 * Math.PI;
+                    for (let i = 0; i < nodeCount; i++) {
+                        const angle = baseAngle + (i / nodeCount) * 2 * Math.PI + (Math.random() * 0.3 - 0.15);
+                        const x = centerX + radiusX * Math.cos(angle);
+                        const y = centerY + radiusY * Math.sin(angle);
+                        graph.nodes.push({ id: i, x: x, y: y });
+                    }
+                } else {
+                    // 随机散布布局（20%概率）
+                    for (let i = 0; i < nodeCount; i++) {
+                        const x = 50 + Math.random() * 300;
+                        const y = 50 + Math.random() * 200;
+                        graph.nodes.push({ id: i, x: x, y: y });
+                    }
+                }
+            } else {
+                // 网格布局加随机偏移
+                const cols = Math.ceil(Math.sqrt(nodeCount));
+                const rows = Math.ceil(nodeCount / cols);
+                const cellWidth = 300 / cols;
+                const cellHeight = 200 / rows;
+                
+                for (let i = 0; i < nodeCount; i++) {
+                    const row = Math.floor(i / cols);
+                    const col = i % cols;
+                    const x = 50 + col * cellWidth + (Math.random() - 0.5) * 30;
+                    const y = 50 + row * cellHeight + (Math.random() - 0.5) * 30;
+                    graph.nodes.push({ id: i, x: x, y: y });
+                }
+            }
+        }
+
+        // 生成随机边
+        function generateRandomEdges(nodeCount, targetEdgeCount) {
+            const maxPossibleEdges = nodeCount * (nodeCount - 1) / 2;
+            targetEdgeCount = Math.min(targetEdgeCount, maxPossibleEdges);
+            
+            // 首先确保图连通 - 生成生成树
+            const visited = new Set();
+            const unvisited = new Set();
+            for (let i = 1; i < nodeCount; i++) {
+                unvisited.add(i);
+            }
+            visited.add(0);
+            
+            while (unvisited.size > 0) {
+                const visitedNode = Array.from(visited)[Math.floor(Math.random() * visited.size)];
+                const unvisitedNode = Array.from(unvisited)[Math.floor(Math.random() * unvisited.size)];
+                
+                addEdge(visitedNode, unvisitedNode);
+                visited.add(unvisitedNode);
+                unvisited.delete(unvisitedNode);
+            }
+            
+            // 添加更多边以达到目标边数
+            let attempts = 0;
+            while (graph.edges.length < targetEdgeCount && attempts < targetEdgeCount * 3) {
+                const from = Math.floor(Math.random() * nodeCount);
+                const to = Math.floor(Math.random() * nodeCount);
+                
+                if (from !== to && !graph.adjacencyList[from].includes(to)) {
+                    addEdge(from, to);
+                }
+                attempts++;
+            }
+        }
+
+        // 添加边的辅助函数
+        function addEdge(from, to) {
+            graph.edges.push({ from, to });
+            graph.adjacencyList[from].push(to);
+            graph.adjacencyList[to].push(from);
+        }
+
+        // Canvas相关变量
+        let canvas, ctx;
+        let nodeRadius = 25;
+        let hoveredNode = -1;
+        let selectedNode = -1;
+
+        // 绘制图（Canvas版本）
+        function drawGraph() {
+            canvas = document.getElementById('graph-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
             // 绘制边
-            graph.edges.forEach(edge => {
+            graph.edges.forEach((edge, index) => {
                 const fromNode = graph.nodes[edge.from];
                 const toNode = graph.nodes[edge.to];
-
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', fromNode.x);
-                line.setAttribute('y1', fromNode.y);
-                line.setAttribute('x2', toNode.x);
-                line.setAttribute('y2', toNode.y);
-                line.classList.add('graph-edge');
-                svg.appendChild(line);
+                
+                drawEdge(fromNode, toNode, index);
             });
 
             // 绘制节点
             graph.nodes.forEach((node, index) => {
-                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                group.classList.add('graph-node');
-                group.setAttribute('data-node', index);
+                drawNode(node, index);
+            });
+            
+            // 绑定Canvas点击事件
+            if (!canvas.hasEventListener) {
+                canvas.addEventListener('click', handleCanvasClick);
+                canvas.addEventListener('mousemove', handleCanvasMouseMove);
+                canvas.addEventListener('mouseleave', handleCanvasMouseLeave);
+                canvas.hasEventListener = true;
+            }
+        }
 
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', node.x);
-                circle.setAttribute('cy', node.y);
-                circle.setAttribute('r', 25);
-                circle.setAttribute('fill', '#f8f5f2');
-                circle.setAttribute('stroke', '#8b7d6b');
-                circle.setAttribute('stroke-width', 2);
+        // 绘制边
+        function drawEdge(fromNode, toNode, edgeIndex) {
+            ctx.save();
+            
+            // 检查是否是冲突边
+            const isConflict = isEdgeConflict(edgeIndex);
+            
+            ctx.strokeStyle = isConflict ? '#ff6b6b' : '#8b7d6b';
+            ctx.lineWidth = isConflict ? 4 : 2;
+            ctx.globalAlpha = isConflict ? 0.8 : 1;
+            
+            ctx.beginPath();
+            ctx.moveTo(fromNode.x, fromNode.y);
+            ctx.lineTo(toNode.x, toNode.y);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
 
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', node.x);
-                text.setAttribute('y', node.y + 5);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('font-size', '16');
-                text.setAttribute('font-weight', 'bold');
-                text.textContent = index;
+        // 绘制节点
+        function drawNode(node, nodeIndex) {
+            ctx.save();
+            
+            // 获取节点状态
+            const isHovered = hoveredNode === nodeIndex;
+            const isTrying = selectedNode === nodeIndex;
+            const nodeColor = nodeColors[nodeIndex];
+            
+            // 绘制节点圆圈
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, nodeRadius, 0, 2 * Math.PI);
+            
+            // 设置填充颜色
+            if (nodeColor !== undefined) {
+                ctx.fillStyle = availableColors[nodeColor];
+            } else {
+                ctx.fillStyle = '#f8f5f2';
+            }
+            
+            ctx.fill();
+            
+            // 设置边框
+            ctx.strokeStyle = isHovered ? '#5c5448' : '#8b7d6b';
+            ctx.lineWidth = isHovered ? 3 : 2;
+            ctx.stroke();
+            
+            // 动画效果（模拟CSS动画）
+            if (isTrying) {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, nodeRadius + 3, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#5c5448';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // 绘制节点标签
+            ctx.fillStyle = '#333';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(nodeIndex.toString(), node.x, node.y);
+            
+            ctx.restore();
+        }
 
-                group.appendChild(circle);
-                group.appendChild(text);
-                svg.appendChild(group);
+        // Canvas鼠标事件处理
+        function handleCanvasClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            const clickedNode = getNodeAtPosition(x, y);
+            if (clickedNode !== -1) {
+                handleNodeClick(clickedNode);
+            }
+        }
+
+        function handleCanvasMouseMove(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            const newHoveredNode = getNodeAtPosition(x, y);
+            
+            if (newHoveredNode !== hoveredNode) {
+                if (hoveredNode !== -1) {
+                    handleNodeLeave(hoveredNode);
+                }
+                hoveredNode = newHoveredNode;
+                if (hoveredNode !== -1) {
+                    handleNodeHover(hoveredNode);
+                }
+                drawGraph(); // 重新绘制以显示悬停效果
+            }
+        }
+
+        function handleCanvasMouseLeave() {
+            if (hoveredNode !== -1) {
+                handleNodeLeave(hoveredNode);
+                hoveredNode = -1;
+                drawGraph();
+            }
+        }
+
+        // 获取位置处的节点
+        function getNodeAtPosition(x, y) {
+            for (let i = 0; i < graph.nodes.length; i++) {
+                const node = graph.nodes[i];
+                const distance = Math.sqrt((x - node.x) ** 2 + (y - node.y) ** 2);
+                if (distance <= nodeRadius) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        // 检查边是否冲突
+        function isEdgeConflict(edgeIndex) {
+            const edge = graph.edges[edgeIndex];
+            const fromColor = nodeColors[edge.from];
+            const toColor = nodeColors[edge.to];
+            
+            return fromColor !== undefined && toColor !== undefined && fromColor === toColor;
+        }
+
+        // 设置图着色交互模式
+        function setColoringInteractionMode(manual) {
+            isManualColoringMode = manual;
+            
+            // 更新按钮样式
+            document.getElementById('manual-coloring-mode').classList.toggle('active', manual === true);
+            document.getElementById('auto-coloring-mode').classList.toggle('active', manual === false);
+            
+            // 显示/隐藏颜色选择器
+            const colorPanel = document.getElementById('manual-color-panel');
+            if (manual === true) {
+                colorPanel.classList.remove('hidden');
+                // 绑定颜色按钮事件
+                setupColorButtons();
+            } else {
+                colorPanel.classList.add('hidden');
+            }
+            
+            // 更新按钮状态
+            if (manual === true) {
+                // 手动模式
+                document.getElementById('start-coloring').disabled = true;
+                document.getElementById('step-coloring').disabled = true;
+                updateColoringStatus('手动模式：选择颜色后点击节点进行着色');
+            } else {
+                // 自动模式
+                document.getElementById('start-coloring').disabled = false;
+                document.getElementById('step-coloring').disabled = false;
+                updateColoringStatus('自动模式：点击按钮寻找最优着色方案');
+            }
+        }
+
+        // 设置颜色按钮事件
+        function setupColorButtons() {
+            document.querySelectorAll('.color-btn').forEach((btn, index) => {
+                btn.onclick = () => {
+                    // 更新活动状态
+                    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    manualColorIndex = parseInt(btn.dataset.color);
+                    updateColoringStatus(`选择颜色${manualColorIndex + 1}：点击节点进行着色`);
+                };
             });
         }
 
-        // 开始图着色
+        // 开始图着色（寻找最优解）
         function startColoring() {
             if (isAnimating) return;
 
             isAnimating = true;
             stepMode = false;
-            isPaused = false;
 
             document.getElementById('start-coloring').disabled = true;
             document.getElementById('step-coloring').disabled = true;
-            document.getElementById('pause-coloring').disabled = false;
 
             resetColoring();
-            solveColoring(0);
+            
+            // 重置最优解搜索状态
+            bestSolution = null;
+            bestColorCount = Infinity;
+            solutionCount = 0;
+            
+            updateColoringStatus('开始寻找最优着色方案...');
+            
+            // 从1种颜色开始尝试，逐步增加
+            currentMaxColors = 1;
+            setTimeout(() => {
+                findOptimalColoring();
+            }, 500);
         }
 
         // 单步执行图着色
@@ -1368,21 +1968,127 @@
             document.getElementById('start-coloring').disabled = true;
             document.getElementById('step-coloring').disabled = true;
 
-            if (currentNodeIndex === 0 && nodeColors.length === 0) {
+            if (currentNodeIndex === 0 && nodeColors.every(c => c === -1)) {
                 resetColoring();
+                // 初始化最优解搜索
+                bestSolution = null;
+                bestColorCount = Infinity;
+                solutionCount = 0;
+                currentMaxColors = 1;
             }
 
-            solveColoringStep();
+            // 单步模式下尝试当前颜色数限制下的着色
+            solveColoringWithLimit(currentNodeIndex, currentMaxColors);
         }
 
-        // 暂停/继续图着色
-        function pauseColoring() {
-            isPaused = !isPaused;
-            document.getElementById('pause-coloring').textContent = isPaused ? '继续' : '暂停';
-
-            if (!isPaused && isAnimating) {
-                solveColoring(currentNodeIndex);
+        // 递归回溯算法（专门用于展示回溯）
+        // 寻找最优着色方案（使用最少颜色数）
+        async function findOptimalColoring() {
+            updateColoringStatus(`尝试使用${currentMaxColors}种颜色进行着色...`);
+            updateColoringStats();
+            
+            // 重置当前搜索状态
+            nodeColors = Array(graph.nodes.length).fill(-1);
+            currentNodeIndex = 0;
+            
+            // 尝试用当前颜色数着色
+            const success = await solveColoringWithLimit(0, currentMaxColors);
+            
+            if (success) {
+                // 找到解决方案
+                bestSolution = [...nodeColors];
+                bestColorCount = currentMaxColors;
+                solutionCount++;
+                
+                updateColoringStatus(`🎉 找到最优解！使用${bestColorCount}种颜色完成着色`);
+                
+                // 显示最优解
+                nodeColors = [...bestSolution];
+                drawGraph();
+                finishColoringAnimation();
+                return;
+            } else {
+                // 当前颜色数无法着色，增加颜色数继续尝试
+                currentMaxColors++;
+                
+                if (currentMaxColors > availableColors.length) {
+                    updateColoringStatus('❌ 超出可用颜色数量，无法完成着色');
+                    finishColoringAnimation();
+                    return;
+                }
+                
+                // 延迟后继续尝试下一个颜色数
+                setTimeout(() => {
+                    findOptimalColoring();
+                }, animationSpeed);
             }
+        }
+
+        // 在颜色数限制下尝试着色
+        async function solveColoringWithLimit(nodeIndex, maxColors) {
+            if (nodeIndex >= graph.nodes.length) {
+                // 成功着色所有节点
+                return true;
+            }
+
+            currentNodeIndex = nodeIndex;
+            updateColoringStats();
+
+            // 尝试每种可用颜色（限制在maxColors范围内）
+            for (let colorIndex = 0; colorIndex < maxColors; colorIndex++) {
+                coloringAttemptCount++;
+                updateColoringStats();
+
+                // 显示正在尝试的颜色
+                selectedNode = nodeIndex;
+                updateColoringStatus(`节点${nodeIndex}：尝试颜色${colorIndex + 1}/${maxColors}...`);
+                drawGraph();
+                
+                if (stepMode) {
+                    // 单步模式下暂停
+                    document.getElementById('step-coloring').disabled = false;
+                    isAnimating = false;
+                    return false;
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, animationSpeed / 2));
+
+                if (isColorSafe(nodeIndex, colorIndex)) {
+                    // 可以使用这个颜色
+                    nodeColors[nodeIndex] = colorIndex;
+                    updateColoringStatus(`节点${nodeIndex}：使用颜色${colorIndex + 1}`);
+                    drawGraph();
+                    
+                    await new Promise(resolve => setTimeout(resolve, animationSpeed / 2));
+
+                    // 递归处理下一个节点
+                    if (await solveColoringWithLimit(nodeIndex + 1, maxColors)) {
+                        return true;
+                    }
+
+                    // 如果递归失败，需要回溯
+                    coloringBacktrackCount++;
+                    updateColoringStats();
+                    updateColoringStatus(`节点${nodeIndex}：颜色${colorIndex + 1}导致无解，回溯尝试下一个颜色`);
+                    
+                    // 重置当前节点颜色，准备尝试下一个颜色
+                    nodeColors[nodeIndex] = -1;
+                    selectedNode = nodeIndex;
+                    drawGraph();
+                    
+                    await new Promise(resolve => setTimeout(resolve, animationSpeed / 3));
+                } else {
+                    // 颜色冲突
+                    updateColoringStatus(`节点${nodeIndex}：颜色${colorIndex + 1}与相邻节点冲突`);
+                    await new Promise(resolve => setTimeout(resolve, animationSpeed / 4));
+                }
+            }
+
+            // 所有颜色都试过了，仍然无解
+            selectedNode = -1;
+            updateColoringStatus(`节点${nodeIndex}：在${maxColors}种颜色限制下无法着色`);
+            drawGraph();
+            return false;
         }
 
         // 重置图着色
@@ -1391,148 +2097,40 @@
 
             isAnimating = false;
             stepMode = false;
-            isPaused = false;
 
-            document.getElementById('start-coloring').disabled = false;
-            document.getElementById('step-coloring').disabled = false;
-            document.getElementById('pause-coloring').disabled = true;
-            document.getElementById('pause-coloring').textContent = '暂停';
+            document.getElementById('start-coloring').disabled = (isManualColoringMode === true);
+            document.getElementById('step-coloring').disabled = (isManualColoringMode === true);
 
             nodeColors = Array(graph.nodes.length).fill(-1);
             currentNodeIndex = 0;
             coloringAttemptCount = 0;
             coloringBacktrackCount = 0;
+            selectedNode = -1;
 
-            // 重置节点颜色
-            graph.nodes.forEach((node, index) => {
-                const nodeElement = document.querySelector(`[data-node="${index}"] circle`);
-                nodeElement.setAttribute('fill', '#f8f5f2');
-                nodeElement.setAttribute('stroke', '#8b7d6b');
-                nodeElement.setAttribute('stroke-width', 2);
-            });
+            // 重置最优解状态
+            bestSolution = null;
+            bestColorCount = Infinity;
+            currentMaxColors = 1;
+            solutionCount = 0;
+
+            // 重新绘制图
+            drawGraph();
 
             updateColoringStats();
-            updateColoringStatus('已重置：点击"开始着色"或"单步执行"');
+            
+            if (isManualColoringMode === true) {
+                updateColoringStatus('手动模式：选择颜色后点击节点进行着色');
+            } else {
+                updateColoringStatus('已重置：点击"开始着色"寻找最优方案');
+            }
         }
 
         // 生成新图
         function generateNewGraph() {
             resetColoring();
             generateRandomGraph();
-            updateColoringStatus('已生成新图：点击"开始着色"开始算法');
-        }
-
-        // 图着色求解算法
-        async function solveColoring(nodeIndex) {
-            if (isPaused) return;
-
-            if (nodeIndex === graph.nodes.length) {
-                updateColoringStatus('🎉 图着色完成！所有节点都已成功着色！');
-                finishColoringAnimation();
-                return true;
-            }
-
-            currentNodeIndex = nodeIndex;
             updateColoringStats();
-
-            for (let colorIndex = 0; colorIndex < availableColors.length; colorIndex++) {
-                coloringAttemptCount++;
-                updateColoringStats();
-
-                if (isColorSafe(nodeIndex, colorIndex)) {
-                    // 尝试颜色
-                    highlightNode(nodeIndex, 'trying');
-                    updateColoringStatus(`节点${nodeIndex}：尝试颜色${colorIndex + 1}...`);
-
-                    await new Promise(resolve => {
-                        coloringAnimationId = setTimeout(resolve, stepMode ? 0 : animationSpeed / 2);
-                    });
-
-                    // 应用颜色
-                    nodeColors[nodeIndex] = colorIndex;
-                    colorNode(nodeIndex, colorIndex);
-
-                    updateColoringStatus(`节点${nodeIndex}：使用颜色${colorIndex + 1}`);
-
-                    await new Promise(resolve => {
-                        coloringAnimationId = setTimeout(resolve, stepMode ? 0 : animationSpeed);
-                    });
-
-                    if (await solveColoring(nodeIndex + 1)) {
-                        return true;
-                    }
-
-                    // 回溯
-                    coloringBacktrackCount++;
-                    updateColoringStats();
-                    updateColoringStatus(`节点${nodeIndex}：回溯，移除颜色${colorIndex + 1}`);
-
-                    nodeColors[nodeIndex] = -1;
-                    resetNodeColor(nodeIndex);
-
-                    if (stepMode) {
-                        document.getElementById('step-coloring').disabled = false;
-                        isAnimating = false;
-                        return false;
-                    }
-
-                    await new Promise(resolve => {
-                        coloringAnimationId = setTimeout(resolve, animationSpeed / 2);
-                    });
-                } else {
-                    // 显示冲突
-                    highlightNode(nodeIndex, 'conflict');
-                    updateColoringStatus(`节点${nodeIndex}：颜色${colorIndex + 1}冲突，尝试下一颜色`);
-
-                    if (stepMode) {
-                        document.getElementById('step-coloring').disabled = false;
-                        isAnimating = false;
-                        return false;
-                    }
-
-                    await new Promise(resolve => {
-                        coloringAnimationId = setTimeout(resolve, animationSpeed / 3);
-                    });
-
-                    resetNodeHighlight(nodeIndex);
-                }
-            }
-
-            updateColoringStatus(`节点${nodeIndex}：无可用颜色，回溯`);
-            return false;
-        }
-
-        // 单步执行图着色逻辑
-        function solveColoringStep() {
-            if (currentNodeIndex >= graph.nodes.length) {
-                updateColoringStatus('🎉 图着色完成！');
-                finishColoringAnimation();
-                return;
-            }
-
-            // 简化的单步逻辑
-            let colored = false;
-            for (let colorIndex = 0; colorIndex < availableColors.length; colorIndex++) {
-                if (isColorSafe(currentNodeIndex, colorIndex)) {
-                    nodeColors[currentNodeIndex] = colorIndex;
-                    colorNode(currentNodeIndex, colorIndex);
-                    updateColoringStatus(`节点${currentNodeIndex}：使用颜色${colorIndex + 1}`);
-                    currentNodeIndex++;
-                    colored = true;
-                    break;
-                }
-            }
-
-            if (!colored && currentNodeIndex > 0) {
-                currentNodeIndex--;
-                resetNodeColor(currentNodeIndex);
-                nodeColors[currentNodeIndex] = -1;
-                updateColoringStatus(`回溯到节点${currentNodeIndex}`);
-            }
-
-            updateColoringStats();
-            document.getElementById('step-coloring').disabled = false;
-            isAnimating = false;
+            updateColoringStatus('已生成新的随机图结构：点击"开始着色"寻找最优方案');
         }
 
         // 检查颜色是否安全
@@ -1546,47 +2144,59 @@
             return true;
         }
 
-        // 高亮节点
-        function highlightNode(nodeIndex, type) {
-            const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
-            if (type === 'trying') {
-                nodeElement.setAttribute('stroke', '#c8b8a8');
-                nodeElement.setAttribute('stroke-width', 4);
-            } else if (type === 'conflict') {
-                nodeElement.setAttribute('stroke', '#d4a574');
-                nodeElement.setAttribute('stroke-width', 4);
-            }
-        }
-
-        // 为节点着色
-        function colorNode(nodeIndex, colorIndex) {
-            const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
-            nodeElement.setAttribute('fill', availableColors[colorIndex]);
-            nodeElement.setAttribute('stroke', '#333');
-            nodeElement.setAttribute('stroke-width', 2);
-        }
-
-        // 重置节点颜色
-        function resetNodeColor(nodeIndex) {
-            const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
-            nodeElement.setAttribute('fill', '#f8f5f2');
-            nodeElement.setAttribute('stroke', '#8b7d6b');
-            nodeElement.setAttribute('stroke-width', 2);
-        }
-
-        // 重置节点高亮
-        function resetNodeHighlight(nodeIndex) {
-            const nodeElement = document.querySelector(`[data-node="${nodeIndex}"] circle`);
-            nodeElement.setAttribute('stroke', '#8b7d6b');
-            nodeElement.setAttribute('stroke-width', 2);
-        }
-
         // 完成着色动画
         function finishColoringAnimation() {
             isAnimating = false;
             document.getElementById('start-coloring').disabled = false;
             document.getElementById('step-coloring').disabled = false;
             document.getElementById('pause-coloring').disabled = true;
+        }
+
+        // 处理节点点击
+        function handleNodeClick(nodeIndex) {
+            if (!isManualColoringMode || isAnimating) return;
+            
+            if (nodeColors[nodeIndex] !== -1) {
+                // 取消着色
+                nodeColors[nodeIndex] = -1;
+                drawGraph();
+                updateColoringStatus(`取消节点${nodeIndex}的颜色`);
+            } else {
+                // 尝试着色
+                if (isColorSafe(nodeIndex, manualColorIndex)) {
+                    nodeColors[nodeIndex] = manualColorIndex;
+                    drawGraph();
+                    updateColoringStatus(`节点${nodeIndex}使用颜色${manualColorIndex + 1}`);
+                    
+                    // 检查是否完成
+                    const uncolored = nodeColors.filter(color => color === -1);
+                    if (uncolored.length === 0) {
+                        updateColoringStatus('🎉 恭喜！您已手动完成图着色！');
+                    }
+                } else {
+                    // 显示冲突
+                    selectedNode = nodeIndex;
+                    drawGraph();
+                    setTimeout(() => {
+                        selectedNode = -1;
+                        drawGraph();
+                    }, 500);
+                    updateColoringStatus(`节点${nodeIndex}与相邻节点颜色冲突！`);
+                }
+            }
+            updateColoringStats();
+        }
+
+        // 处理节点悬停
+        function handleNodeHover(nodeIndex) {
+            if (isAnimating) return;
+            // Canvas版本中悬停效果在drawNode中处理
+        }
+
+        // 处理节点离开
+        function handleNodeLeave(nodeIndex) {
+            if (isAnimating) return;
+            // Canvas版本中悬停效果在drawNode中处理
         }
 
         // 更新图着色状态
@@ -1596,12 +2206,33 @@
 
         // 更新图着色统计
         function updateColoringStats() {
+            const complexity = document.getElementById('graph-complexity')?.value || 'medium';
+            const complexityNames = {
+                'simple': '简单',
+                'medium': '中等', 
+                'complex': '复杂'
+            };
+            
+            document.getElementById('current-complexity').textContent = complexityNames[complexity];
+            document.getElementById('node-count').textContent = graph.nodes.length;
+            document.getElementById('edge-count').textContent = graph.edges.length;
             document.getElementById('coloring-attempt-count').textContent = coloringAttemptCount;
             document.getElementById('coloring-backtrack-count').textContent = coloringBacktrackCount;
             document.getElementById('current-node').textContent = currentNodeIndex;
 
             const usedColors = new Set(nodeColors.filter(color => color !== -1));
             document.getElementById('colors-used').textContent = usedColors.size;
+            
+            // 更新最优解信息
+            if (bestSolution) {
+                document.getElementById('best-color-count').textContent = bestColorCount;
+                document.getElementById('solution-count').textContent = solutionCount;
+            } else {
+                document.getElementById('best-color-count').textContent = '-';
+                document.getElementById('solution-count').textContent = '0';
+            }
+            
+            document.getElementById('current-max-colors').textContent = currentMaxColors;
         }
 
         // 页面加载完成后初始化
