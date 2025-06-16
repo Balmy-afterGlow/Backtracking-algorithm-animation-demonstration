@@ -524,7 +524,6 @@
                     <button id="step-queens" class="control-btn" disabled>单步执行</button>
                     <button id="pause-queens" class="control-btn" disabled>暂停</button>
                     <button id="reset-queens" class="control-btn">重置</button>
-                    <button id="find-all-solutions" class="control-btn">查找所有解</button>
 
                     <div class="speed-control">
                         <label>动画速度：<span id="speed-display">中等</span></label>
@@ -544,7 +543,6 @@
                         <div>尝试次数: <span id="attempt-count">0</span></div>
                         <div>回溯次数: <span id="backtrack-count">0</span></div>
                         <div>当前行: <span id="current-row">0</span></div>
-                        <div>找到解数: <span id="solutions-found">0</span></div>
                         <div>执行时间: <span id="execution-time">0</span>ms</div>
                     </div>
                 </div>
@@ -665,12 +663,13 @@
         let attemptCount = 0;
         let backtrackCount = 0;
         let queensAnimationId = null;
-        let solutionsFound = 0;
-        let allSolutions = [];
         let startTime = 0;
         let isManualMode = false;
         let manualQueens = [];
-        let findingAllSolutions = false;
+        
+        // 搜索状态保存变量（用于暂停恢复）
+        let searchStack = [];  // 保存搜索栈状态
+        let currentCol = 0;    // 当前正在尝试的列
 
         // 图着色相关变量
         let graph = {
@@ -721,16 +720,15 @@
             resetQueensState();
             updateQueensStats();
             
-            // 初始状态：需要用户选择模式
-            setInteractionMode(null);
-            updateQueensStatus('请选择交互模式开始');
+            // 默认进入自动求解模式
+            setInteractionMode(false);
+            updateQueensStatus('自动模式：点击按钮开始算法求解');
 
             // 绑定控制按钮事件
             document.getElementById('start-queens').onclick = startQueens;
             document.getElementById('step-queens').onclick = stepQueens;
             document.getElementById('pause-queens').onclick = pauseQueens;
             document.getElementById('reset-queens').onclick = resetQueens;
-            document.getElementById('find-all-solutions').onclick = findAllSolutions;
             document.getElementById('manual-mode').onclick = () => setInteractionMode(true);
             document.getElementById('auto-mode').onclick = () => setInteractionMode(false);
 
@@ -797,11 +795,10 @@
             queensSolution = Array(boardSize).fill(-1);
             manualQueens = [];
             currentRow = 0;
+            currentCol = 0;
             attemptCount = 0;
             backtrackCount = 0;
-            solutionsFound = 0;
-            allSolutions = [];
-            findingAllSolutions = false;
+            searchStack = [];
             resetQueensBoard();
         }
 
@@ -818,21 +815,13 @@
                 // 手动模式
                 document.getElementById('start-queens').disabled = true;
                 document.getElementById('step-queens').disabled = true;
-                document.getElementById('find-all-solutions').disabled = true;
                 updateQueensStatus('手动模式：点击棋盘放置皇后');
-            } else if (manual === false) {
+            } else {
                 // 自动模式
                 document.getElementById('start-queens').disabled = false;
                 document.getElementById('step-queens').disabled = false;
-                document.getElementById('find-all-solutions').disabled = false;
                 updateQueensStatus('自动模式：点击按钮开始算法求解');
                 clearManualHighlights();
-            } else {
-                // 未选择模式
-                document.getElementById('start-queens').disabled = true;
-                document.getElementById('step-queens').disabled = true;
-                document.getElementById('find-all-solutions').disabled = true;
-                updateQueensStatus('请选择交互模式开始');
             }
         }
 
@@ -859,7 +848,6 @@
                     // 检查是否完成
                     if (manualQueens.length === boardSize) {
                         updateQueensStatus('🎉 恭喜！您已成功手动解决N皇后问题！');
-                        solutionsFound = 1;
                         updateQueensStats();
                     }
                 } else {
@@ -909,37 +897,13 @@
             });
         }
 
-        // 查找所有解决方案
-        function findAllSolutions() {
-            if (isAnimating || isManualMode === true || isManualMode === null) return;
 
-            isAnimating = true;
-            findingAllSolutions = true;
-            startTime = Date.now();
-
-            document.getElementById('start-queens').disabled = true;
-            document.getElementById('step-queens').disabled = true;
-            document.getElementById('find-all-solutions').disabled = true;
-            document.getElementById('pause-queens').disabled = false;
-            document.getElementById('pause-queens').textContent = '暂停';
-
-            resetQueensBoard();
-            currentRow = 0;
-            attemptCount = 0;
-            backtrackCount = 0;
-            solutionsFound = 0;
-            allSolutions = [];
-
-            updateQueensStatus('正在查找所有解决方案...');
-            solveAllQueens(0);
-        }
         function startQueens() {
-            if (isAnimating || isManualMode === true || isManualMode === null) return;
+            if (isAnimating || isManualMode === true) return;
 
             isAnimating = true;
             stepMode = false;
             isPaused = false;
-            findingAllSolutions = false;
             startTime = Date.now();
 
             document.getElementById('start-queens').disabled = true;
@@ -947,15 +911,19 @@
             document.getElementById('pause-queens').disabled = false;
             document.getElementById('pause-queens').textContent = '暂停';
 
-            resetQueensBoard();
-            resetQueensState();
+            // 只有在没有现有搜索状态时才重置
+            if (searchStack.length === 0) {
+                resetQueensBoard();
+                resetQueensState();
+            }
+            
             updateQueensStatus('开始求解...');
-            solveQueens(0);
+            solveQueens();
         }
 
         // 单步执行八皇后
         function stepQueens() {
-            if (isAnimating || isManualMode === true || isManualMode === null) return;
+            if (isAnimating || isManualMode === true) return;
 
             stepMode = true;
             isAnimating = true;
@@ -963,13 +931,14 @@
             document.getElementById('start-queens').disabled = true;
             document.getElementById('step-queens').disabled = true;
 
-            if (currentRow === 0 && solutionsFound === 0) {
+            // 初始化搜索状态（如果是第一次单步执行）
+            if (searchStack.length === 0 && currentRow === 0) {
                 resetQueensBoard();
                 resetQueensState();
                 startTime = Date.now();
             }
 
-            solveQueensStep();
+            solveQueens();
         }
 
         // 暂停/继续八皇后
@@ -978,11 +947,8 @@
             document.getElementById('pause-queens').textContent = isPaused ? '继续' : '暂停';
 
             if (!isPaused && isAnimating) {
-                if (findingAllSolutions) {
-                    solveAllQueens(currentRow);
-                } else {
-                    solveQueens(currentRow);
-                }
+                // 从当前状态继续执行
+                solveQueens();
             }
         }
 
@@ -993,20 +959,23 @@
             isAnimating = false;
             stepMode = false;
             isPaused = false;
-            findingAllSolutions = false;
 
-            document.getElementById('start-queens').disabled = (isManualMode === true);
-            document.getElementById('step-queens').disabled = (isManualMode === true);
-            document.getElementById('find-all-solutions').disabled = (isManualMode === true);
+            // 保持当前交互模式不变
+            const currentMode = isManualMode;
+            
+            document.getElementById('start-queens').disabled = (currentMode === true);
+            document.getElementById('step-queens').disabled = (currentMode === true);
             document.getElementById('pause-queens').disabled = true;
             document.getElementById('pause-queens').textContent = '暂停';
 
             resetQueensState();
             updateQueensStats();
             
-            // 重置到需要选择模式的状态
-            setInteractionMode(null);
-            updateQueensStatus('请选择交互模式开始');
+            if (currentMode === true) {
+                updateQueensStatus('手动模式：点击棋盘放置皇后');
+            } else {
+                updateQueensStatus('自动模式：点击按钮开始算法求解');
+            }
         }
 
         // 重置棋盘显示
@@ -1023,134 +992,111 @@
             queensBoard = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
         }
 
-        // 修复的八皇后求解算法
-        async function solveQueens(row) {
-            if (isPaused) return false;
-
-            if (row === boardSize) {
-                solutionsFound++;
-                updateQueensStats();
-                updateQueensStatus('🎉 找到解决方案！');
-                finishQueensAnimation();
-                return true;
+        // 修复的八皇后求解算法（迭代版本，支持暂停恢复）
+        async function solveQueens(startRow = 0) {
+            // 初始化搜索状态
+            if (startRow === 0 && searchStack.length === 0) {
+                searchStack = [{row: 0, col: 0}];
+                currentRow = 0;
+                currentCol = 0;
             }
 
-            currentRow = row;
-            updateQueensStats();
-
-            for (let col = 0; col < boardSize; col++) {
-                if (isPaused) return false;
+            while (searchStack.length > 0 && !isPaused) {
+                const state = searchStack[searchStack.length - 1];
+                currentRow = state.row;
+                currentCol = state.col;
                 
-                attemptCount++;
                 updateQueensStats();
 
-                if (isSafe(row, col)) {
-                    // 放置皇后
-                    queensSolution[row] = col;
-                    queensBoard[row][col] = 1;
+                // 检查是否找到解决方案
+                if (currentRow === boardSize) {
+                    updateQueensStats();
+                    updateQueensStatus('🎉 找到解决方案！');
+                    finishQueensAnimation();
+                    return true;
+                }
 
-                    if (!stepMode) {
-                        highlightCell(row, col, 'trying');
-                        updateQueensStatus(`第${row + 1}行：尝试在列${col + 1}放置皇后...`);
-                        await new Promise(resolve => setTimeout(resolve, animationSpeed / 2));
+                let foundValidPosition = false;
+
+                // 在当前行寻找可放置的位置
+                for (let col = currentCol; col < boardSize && !isPaused; col++) {
+                    attemptCount++;
+                    updateQueensStats();
+
+                    if (isSafe(currentRow, col)) {
+                        // 找到安全位置，放置皇后
+                        queensSolution[currentRow] = col;
+                        queensBoard[currentRow][col] = 1;
+
+                        if (!stepMode) {
+                            highlightCell(currentRow, col, 'trying');
+                            updateQueensStatus(`第${currentRow + 1}行：尝试在列${col + 1}放置皇后...`);
+                            await new Promise(resolve => queensAnimationId = setTimeout(resolve, animationSpeed / 2));
+                            if (isPaused) return false;
+                        }
+
+                        placeQueen(currentRow, col);
+                        
+                        if (stepMode) {
+                            // 更新当前状态，准备下一步
+                            searchStack[searchStack.length - 1] = {row: currentRow, col: col + 1};
+                            searchStack.push({row: currentRow + 1, col: 0});
+                            document.getElementById('step-queens').disabled = false;
+                            isAnimating = false;
+                            return false;
+                        }
+
+                        await new Promise(resolve => queensAnimationId = setTimeout(resolve, animationSpeed / 2));
+                        if (isPaused) return false;
+
+                        // 移动到下一行
+                        searchStack[searchStack.length - 1] = {row: currentRow, col: col + 1};
+                        searchStack.push({row: currentRow + 1, col: 0});
+                        foundValidPosition = true;
+                        break;
+                    } else {
+                        // 显示冲突
+                        if (!stepMode && !isPaused) {
+                            highlightAttacked(currentRow, col);
+                            updateQueensStatus(`第${currentRow + 1}行：列${col + 1}位置冲突，尝试下一个位置`);
+                            await new Promise(resolve => queensAnimationId = setTimeout(resolve, animationSpeed / 3));
+                        }
                     }
+                }
 
-                    placeQueen(row, col);
+                // 如果在当前行没有找到有效位置，需要回溯
+                if (!foundValidPosition && !isPaused) {
+                    searchStack.pop(); // 移除当前行的状态
                     
-                    if (stepMode) {
-                        document.getElementById('step-queens').disabled = false;
-                        isAnimating = false;
+                    if (searchStack.length === 0) {
+                        updateQueensStatus('无解：该棋盘大小下无法解决N皇后问题');
+                        finishQueensAnimation();
                         return false;
                     }
 
-                    await new Promise(resolve => setTimeout(resolve, animationSpeed / 2));
-
-                    // 递归求解下一行
-                    if (await solveQueens(row + 1)) {
-                        return true;
-                    }
-
-                    // 回溯
+                    // 回溯到上一行
+                    currentRow--;
                     backtrackCount++;
                     updateQueensStats();
-                    updateQueensStatus(`第${row + 1}行：回溯，移除列${col + 1}的皇后`);
+                    
+                    const prevCol = queensSolution[currentRow];
+                    if (prevCol >= 0) {
+                        updateQueensStatus(`第${currentRow + 1}行：回溯，移除列${prevCol + 1}的皇后`);
+                        removeQueen(currentRow, prevCol);
+                        queensBoard[currentRow][prevCol] = 0;
+                        queensSolution[currentRow] = -1;
 
-                    removeQueen(row, col);
-                    queensBoard[row][col] = 0;
-                    queensSolution[row] = -1;
-
-                    if (!stepMode) {
-                        await new Promise(resolve => setTimeout(resolve, animationSpeed / 2));
-                    }
-                } else {
-                    // 显示冲突
-                    if (!stepMode) {
-                        highlightAttacked(row, col);
-                        updateQueensStatus(`第${row + 1}行：列${col + 1}位置冲突，尝试下一个位置`);
-                        await new Promise(resolve => setTimeout(resolve, animationSpeed / 3));
+                        if (!stepMode) {
+                            await new Promise(resolve => queensAnimationId = setTimeout(resolve, animationSpeed / 2));
+                        }
                     }
                 }
-            }
-
-            // 当前行没有可行解
-            if (row === 0) {
-                updateQueensStatus('无解：该棋盘大小下无法解决N皇后问题');
-                finishQueensAnimation();
             }
 
             return false;
         }
 
-        // 查找所有解的算法
-        async function solveAllQueens(row) {
-            if (isPaused) return;
 
-            if (row === boardSize) {
-                // 找到一个解
-                solutionsFound++;
-                allSolutions.push([...queensSolution]);
-                updateQueensStats();
-                updateQueensStatus(`找到第${solutionsFound}个解决方案...`);
-                
-                // 继续寻找其他解（回溯）
-                return;
-            }
-
-            currentRow = row;
-            updateQueensStats();
-
-            for (let col = 0; col < boardSize; col++) {
-                if (isPaused) return;
-                
-                attemptCount++;
-                updateQueensStats();
-
-                if (isSafe(row, col)) {
-                    // 放置皇后
-                    queensSolution[row] = col;
-                    queensBoard[row][col] = 1;
-                    placeQueen(row, col);
-
-                    await new Promise(resolve => setTimeout(resolve, 30));
-
-                    // 递归求解下一行
-                    await solveAllQueens(row + 1);
-                    
-                    // 回溯
-                    backtrackCount++;
-                    updateQueensStats();
-                    removeQueen(row, col);
-                    queensBoard[row][col] = 0;
-                    queensSolution[row] = -1;
-                }
-            }
-
-            // 如果回到第一行且完成所有列的尝试，表示搜索完成
-            if (row === 0) {
-                updateQueensStatus(`🎉 搜索完成！共找到${solutionsFound}个解决方案`);
-                finishQueensAnimation();
-            }
-        }
 
         // 单步执行逻辑
         function solveQueensStep() {
@@ -1270,7 +1216,6 @@
             document.getElementById('attempt-count').textContent = attemptCount;
             document.getElementById('backtrack-count').textContent = backtrackCount;
             document.getElementById('current-row').textContent = currentRow + 1;
-            document.getElementById('solutions-found').textContent = solutionsFound;
             
             // 更新执行时间
             if (startTime > 0) {
