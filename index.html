@@ -1366,6 +1366,7 @@
             coloringAttemptCount = 0;
             coloringBacktrackCount = 0;
             currentNodeIndex = 0;
+            manualColorIndex = 0; // 初始化手动颜色索引
 
             updateColoringStats();
             updateColoringStatus('准备开始：点击"开始着色"寻找最优方案');
@@ -1431,6 +1432,9 @@
 
             // 生成专门设计的回溯图结构
             generateBacktrackingGraph(nodeCount);
+
+            // 初始化节点颜色数组
+            nodeColors = Array(nodeCount).fill(-1);
 
             drawGraph();
         }
@@ -1795,7 +1799,7 @@
             ctx.arc(node.x, node.y, nodeRadius, 0, 2 * Math.PI);
             
             // 设置填充颜色
-            if (nodeColor !== undefined) {
+            if (nodeColor !== undefined && nodeColor !== -1) {
                 ctx.fillStyle = availableColors[nodeColor];
             } else {
                 ctx.fillStyle = '#f8f5f2';
@@ -1884,7 +1888,9 @@
             const fromColor = nodeColors[edge.from];
             const toColor = nodeColors[edge.to];
             
-            return fromColor !== undefined && toColor !== undefined && fromColor === toColor;
+            return fromColor !== undefined && fromColor !== -1 && 
+                   toColor !== undefined && toColor !== -1 && 
+                   fromColor === toColor;
         }
 
         // 设置图着色交互模式
